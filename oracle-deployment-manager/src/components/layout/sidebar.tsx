@@ -28,6 +28,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { useLocale } from '@/hooks/use-locale';
 import { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -35,30 +36,28 @@ export function Sidebar() {
   const { t, isRTL } = useLocale();
 
   const navItems = [
-    { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard },
-    { href: '/architecture', label: t('nav.architecture'), icon: Layers },
-    { href: '/file-manager', label: t('nav.fileManager'), icon: FolderOpen },
-    { href: '/config-manager', label: t('nav.configManager'), icon: Settings2 },
-    { href: '/editor', label: t('nav.smartEditor'), icon: Code2 },
-    { href: '/deployment', label: t('nav.deployment'), icon: Rocket },
-    { href: '/profiles', label: t('nav.profiles'), icon: UserCircle2 },
-    { href: '/templates', label: t('nav.templates'), icon: Copy },
-    { href: '/rollback', label: t('nav.rollback'), icon: RotateCcw },
-    { href: '/logs', label: t('nav.logs'), icon: ScrollText },
-    { href: '/sw-deploy', label: t('nav.swDeploy'), icon: Package },
-    { href: '/translations', label: t('nav.translations'), icon: Languages },
-    { href: '/branding', label: t('nav.branding'), icon: Paintbrush },
+    { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, group: 'main' },
+    { href: '/architecture', label: t('nav.architecture'), icon: Layers, group: 'main' },
+    { href: '/sw-deploy', label: t('nav.swDeploy'), icon: Package, group: 'main' },
+    { href: '/deployment', label: t('nav.deployment'), icon: Rocket, group: 'docs' },
+    { href: '/templates', label: t('nav.templates'), icon: Copy, group: 'docs' },
+    { href: '/file-manager', label: t('nav.fileManager'), icon: FolderOpen, group: 'tools' },
+    { href: '/config-manager', label: t('nav.configManager'), icon: Settings2, group: 'tools' },
+    { href: '/editor', label: t('nav.smartEditor'), icon: Code2, group: 'tools' },
+    { href: '/profiles', label: t('nav.profiles'), icon: UserCircle2, group: 'tools' },
+    { href: '/rollback', label: t('nav.rollback'), icon: RotateCcw, group: 'system' },
+    { href: '/logs', label: t('nav.logs'), icon: ScrollText, group: 'system' },
+    { href: '/translations', label: t('nav.translations'), icon: Languages, group: 'settings' },
+    { href: '/branding', label: t('nav.branding'), icon: Paintbrush, group: 'settings' },
   ];
 
   const ChevronCollapse = isRTL ? ChevronFirst : ChevronLast;
   const ChevronExpand = isRTL ? ChevronLast : ChevronFirst;
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname, setMobileMenuOpen]);
 
-  // Close mobile menu on resize to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
@@ -71,105 +70,141 @@ export function Sidebar() {
 
   const isExpanded = sidebarOpen;
 
+  const groupLabels: Record<string, string> = {
+    main: isRTL ? 'الرئيسية' : 'Main',
+    docs: isRTL ? 'التوثيق' : 'Documentation',
+    tools: isRTL ? 'الأدوات' : 'Tools',
+    system: isRTL ? 'النظام' : 'System',
+    settings: isRTL ? 'الإعدادات' : 'Settings',
+  };
+
+  let lastGroup = '';
+
   return (
     <>
       {/* Mobile overlay */}
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/50 md:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       <aside
         className={cn(
-          'fixed top-0 z-40 h-screen bg-card transition-all duration-300 flex flex-col',
-          isRTL ? 'right-0 border-l' : 'left-0 border-r',
-          // Desktop: use sidebarOpen state
+          'fixed top-0 z-40 h-screen transition-all duration-300 flex flex-col',
+          'bg-[#0F1520] dark:bg-[#0F1520]',
+          isRTL ? 'right-0 border-l border-white/[0.06]' : 'left-0 border-r border-white/[0.06]',
           'hidden md:flex',
-          isExpanded ? 'w-64' : 'w-16',
-          // Mobile: always w-64, slide in/out
+          isExpanded ? 'w-64' : 'w-[72px]',
           mobileMenuOpen && 'flex !w-64'
         )}
       >
         {/* Logo / Brand */}
-        <div className="flex items-center gap-2 px-4 h-16 border-b shrink-0">
-          <Database className="h-6 w-6 text-orange-500 shrink-0" />
+        <div className={cn(
+          'flex items-center gap-3 h-16 border-b border-white/[0.06] shrink-0',
+          isExpanded ? 'px-4' : 'px-0 justify-center'
+        )}>
+          <div className="relative shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#18B13A] to-[#15803D] flex items-center justify-center shadow-lg shadow-[#18B13A]/20">
+              <Database className="h-4.5 w-4.5 text-white" />
+            </div>
+          </div>
           {isExpanded && (
-            <div className="overflow-hidden flex-1 text-start">
-              <h1 className="font-bold text-sm leading-tight">{t('app.shortName')}</h1>
-              <p className="text-[10px] text-muted-foreground">{t('app.description')}</p>
+            <div className="overflow-hidden flex-1 min-w-0">
+              <h1 className="font-bold text-sm text-white leading-tight truncate">Ultimate Solutions</h1>
+              <p className="text-[10px] text-slate-500 truncate">Enterprise Platform</p>
             </div>
           )}
         </div>
 
         {/* Navigation */}
-        <ScrollArea className="flex-1 py-2">
+        <ScrollArea className="flex-1 py-3">
           <nav className="space-y-1 px-2">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
+              const showGroup = item.group !== lastGroup && isExpanded;
+              if (item.group !== lastGroup) lastGroup = item.group;
+
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'relative flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200',
-                    isActive
-                      ? 'bg-primary/10 text-primary font-medium'
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                <div key={item.href}>
+                  {showGroup && (
+                    <div className={cn(
+                      'px-3 pt-4 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600',
+                      isRTL && 'text-end'
+                    )}>
+                      {groupLabels[item.group]}
+                    </div>
                   )}
-                  title={!isExpanded ? item.label : undefined}
-                >
-                  {isActive && (
-                    <span
-                      className={cn(
-                        'absolute top-1 bottom-1 w-[3px] rounded-full bg-primary',
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      'relative flex items-center gap-3 rounded-xl text-sm transition-all duration-200',
+                      isExpanded ? 'px-3 py-2.5' : 'px-0 py-2.5 justify-center',
+                      isActive
+                        ? 'bg-[#18B13A]/10 text-[#4ADE80] font-medium'
+                        : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
+                    )}
+                    title={!isExpanded ? item.label : undefined}
+                  >
+                    {/* Active indicator */}
+                    {isActive && (
+                      <span className={cn(
+                        'absolute top-1.5 bottom-1.5 w-[3px] rounded-full bg-[#18B13A]',
                         isRTL ? 'left-0' : 'right-0'
-                      )}
-                    />
-                  )}
-                  <item.icon className={cn('h-4 w-4 shrink-0', isActive && 'text-primary')} />
-                  {isExpanded && (
-                    <span className="flex-1 text-start truncate">{item.label}</span>
-                  )}
-                </Link>
+                      )} />
+                    )}
+                    <item.icon className={cn(
+                      'shrink-0 transition-colors',
+                      isExpanded ? 'h-[18px] w-[18px]' : 'h-5 w-5',
+                      isActive ? 'text-[#18B13A]' : 'text-slate-600'
+                    )} />
+                    {isExpanded && (
+                      <span className="flex-1 truncate">{item.label}</span>
+                    )}
+                  </Link>
+                </div>
               );
             })}
           </nav>
         </ScrollArea>
 
-        <Separator />
+        <Separator className="bg-white/[0.06]" />
 
         {/* Settings link */}
         <div className="p-2 shrink-0">
           <Link
             href="/settings"
             className={cn(
-              'relative flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-all duration-200',
+              'relative flex items-center gap-3 rounded-xl text-sm transition-all duration-200',
+              isExpanded ? 'px-3 py-2.5' : 'px-0 py-2.5 justify-center',
               pathname === '/settings'
-                ? 'bg-primary/10 text-primary font-medium'
-                : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                ? 'bg-[#18B13A]/10 text-[#4ADE80] font-medium'
+                : 'text-slate-500 hover:text-slate-300 hover:bg-white/[0.04]'
             )}
           >
             {pathname === '/settings' && (
-              <span
-                className={cn(
-                  'absolute top-1 bottom-1 w-[3px] rounded-full bg-primary',
-                  isRTL ? 'left-0' : 'right-0'
-                )}
-              />
+              <span className={cn(
+                'absolute top-1.5 bottom-1.5 w-[3px] rounded-full bg-[#18B13A]',
+                isRTL ? 'left-0' : 'right-0'
+              )} />
             )}
-            <Shield className={cn('h-4 w-4 shrink-0', pathname === '/settings' && 'text-primary')} />
-            {isExpanded && <span className="flex-1 text-start">{t('nav.settings')}</span>}
+            <Shield className={cn('shrink-0', isExpanded ? 'h-[18px] w-[18px]' : 'h-5 w-5', pathname === '/settings' && 'text-[#18B13A]')} />
+            {isExpanded && <span className="flex-1 truncate">{t('nav.settings')}</span>}
           </Link>
         </div>
 
         {/* Collapse/Expand button - desktop only */}
-        <div className="p-2 border-t shrink-0 hidden md:block">
+        <div className="p-2 border-t border-white/[0.06] shrink-0 hidden md:block">
           <Button
             variant="ghost"
             size="sm"
-            className="w-full"
+            className="w-full text-slate-600 hover:text-slate-300 hover:bg-white/[0.04] rounded-xl h-9"
             onClick={toggleSidebar}
           >
             {isExpanded ? (

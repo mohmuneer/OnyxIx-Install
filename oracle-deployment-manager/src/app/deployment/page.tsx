@@ -7,14 +7,14 @@ import { BookOpen } from 'lucide-react';
 export default function DeploymentPage() {
   return (
     <AppLayout>
-      <div dir="rtl" className="space-y-4 text-right">
+      <div dir="rtl" className="us-page-bg min-h-screen space-y-4 text-right">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600">
+          <div className="p-2 rounded-xl bg-gradient-to-br from-[#18B13A] to-[#15803D]">
             <BookOpen className="h-5 w-5 text-white" />
           </div>
           <div className="text-right">
-            <h1 className="text-2xl font-bold">توثيق النظام</h1>
-            <p className="text-muted-foreground text-sm">
+            <h1 className="text-2xl font-bold text-white">توثيق النظام</h1>
+            <p className="text-slate-500 text-sm">
               توثيق وتثبيت النظام للمهندسين والمحاسبين
             </p>
           </div>

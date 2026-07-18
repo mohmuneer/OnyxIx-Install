@@ -11,14 +11,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const { isRTL } = useLocale();
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#0B0F17]">
       <Sidebar />
       <div
         className={cn(
           'transition-all duration-300 min-h-screen flex flex-col',
-          // Mobile: no margin, sidebar is overlay
-          'ms-0 md:ms-16',
-          // Desktop: use sidebar state
+          'ms-0 md:ms-[72px]',
           sidebarOpen && 'md:!ms-64'
         )}
       >

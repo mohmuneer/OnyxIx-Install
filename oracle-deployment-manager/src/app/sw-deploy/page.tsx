@@ -6,7 +6,9 @@ import { SwDeployWizard } from '@/components/sw-deploy/sw-deploy-wizard';
 export default function SwDeployPage() {
   return (
     <AppLayout>
-      <SwDeployWizard />
+      <div className="us-page-bg min-h-screen">
+        <SwDeployWizard />
+      </div>
     </AppLayout>
   );
 }

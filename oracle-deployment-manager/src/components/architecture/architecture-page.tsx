@@ -214,7 +214,7 @@ export function ArchitecturePage() {
 
   return (
     <AppLayout>
-      <div className="min-h-screen bg-grid">
+      <div className="us-page-bg min-h-screen">
         <div className="space-y-6 p-6 max-w-[1400px] mx-auto">
 
           {/* ── Enterprise Header ── */}

@@ -6,7 +6,9 @@ import { DeploymentGuide } from '@/components/guide/deployment-guide';
 export default function TemplatesPage() {
   return (
     <AppLayout>
-      <DeploymentGuide />
+      <div className="us-page-bg min-h-screen">
+        <DeploymentGuide />
+      </div>
     </AppLayout>
   );
 }

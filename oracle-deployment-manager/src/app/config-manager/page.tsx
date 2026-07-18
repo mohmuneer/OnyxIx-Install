@@ -8,12 +8,14 @@ export default function ConfigManagerPage() {
   const { t } = useLocale();
   return (
     <AppLayout>
+      <div className="us-page-bg min-h-screen">
       <div className="space-y-4">
         <div>
-          <h1 className="text-2xl font-bold">{t('configManager.title')}</h1>
-          <p className="text-muted-foreground">{t('configManager.subtitle')}</p>
+          <h1 className="text-2xl font-bold text-white">{t('configManager.title')}</h1>
+          <p className="text-slate-500">{t('configManager.subtitle')}</p>
         </div>
         <ConfigManager />
+      </div>
       </div>
     </AppLayout>
   );

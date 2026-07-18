@@ -6,8 +6,10 @@ import { LogViewer } from '@/components/logs/log-viewer';
 export default function LogsPage() {
   return (
     <AppLayout>
+      <div className="us-page-bg min-h-screen">
       <div className="space-y-4">
         <LogViewer />
+      </div>
       </div>
     </AppLayout>
   );

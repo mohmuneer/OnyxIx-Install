@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Fragment } from 'react';
 import { useFileStore } from '@/stores/file-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -310,8 +310,8 @@ export function FileManager() {
               </div>
               <ScrollArea className="h-[calc(100vh-400px)]">
                 {filteredFiles.map((item) => (
-                  <>
-                    <div key={item.path + '-desktop'} className={cn('hidden md:grid grid-cols-[1fr_120px_150px_100px] gap-2 px-4 py-2 border-b cursor-pointer hover:bg-accent transition-colors', selectedFiles.includes(item.path) && 'bg-accent')}
+                  <Fragment key={item.path}>
+                    <div className={cn('hidden md:grid grid-cols-[1fr_120px_150px_100px] gap-2 px-4 py-2 border-b cursor-pointer hover:bg-accent transition-colors', selectedFiles.includes(item.path) && 'bg-accent')}
                       onClick={() => toggleSelectFile(item.path)} onDoubleClick={() => handleDoubleClick(item)}>
                       <div className="flex items-center gap-2 min-w-0">
                         {getFileIcon(item)}<span className="truncate text-sm">{item.name}</span>
@@ -320,14 +320,14 @@ export function FileManager() {
                       <span className="text-sm text-muted-foreground self-center">{new Date(item.modified).toLocaleDateString()}</span>
                       <span className="text-sm text-muted-foreground self-center">{item.type === 'directory' ? t('common.folder') : (item.extension || t('common.file'))}</span>
                     </div>
-                    <div key={item.path + '-mobile'} className={cn('md:hidden grid grid-cols-[1fr_80px] gap-2 px-4 py-2 border-b cursor-pointer hover:bg-accent transition-colors', selectedFiles.includes(item.path) && 'bg-accent')}
+                    <div className={cn('md:hidden grid grid-cols-[1fr_80px] gap-2 px-4 py-2 border-b cursor-pointer hover:bg-accent transition-colors', selectedFiles.includes(item.path) && 'bg-accent')}
                       onClick={() => toggleSelectFile(item.path)} onDoubleClick={() => handleDoubleClick(item)}>
                       <div className="flex items-center gap-2 min-w-0">
                         {getFileIcon(item)}<span className="truncate text-sm">{item.name}</span>
                       </div>
                       <span className="text-sm text-muted-foreground self-center text-center">{item.type === 'directory' ? t('common.folder') : (item.extension || t('common.file'))}</span>
                     </div>
-                  </>
+                  </Fragment>
                 ))}
               </ScrollArea>
             </div>

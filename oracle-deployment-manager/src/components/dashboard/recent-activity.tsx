@@ -7,10 +7,10 @@ import { useLocale } from '@/hooks/use-locale';
 import { cn } from '@/lib/utils';
 
 const LEVEL_CONFIG: Record<string, { icon: React.ComponentType<{ className?: string }>; color: string; bg: string }> = {
-  success: { icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-  error: { icon: XCircle, color: 'text-red-400', bg: 'bg-red-500/10' },
-  warning: { icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-  info: { icon: Info, color: 'text-blue-400', bg: 'bg-blue-500/10' },
+  success: { icon: CheckCircle2, color: 'text-[#22C55E]', bg: 'bg-[#22C55E]/10' },
+  error: { icon: XCircle, color: 'text-[#EF4444]', bg: 'bg-[#EF4444]/10' },
+  warning: { icon: AlertTriangle, color: 'text-[#FF9800]', bg: 'bg-[#FF9800]/10' },
+  info: { icon: Info, color: 'text-[#38BDF8]', bg: 'bg-[#38BDF8]/10' },
 };
 
 export function RecentActivity() {
@@ -23,20 +23,20 @@ export function RecentActivity() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
-      className="glass-card rounded-2xl overflow-hidden"
+      className="rounded-2xl bg-[#111827] border border-white/[0.06] overflow-hidden"
     >
-      <div className={cn('flex items-center justify-between px-5 py-3 border-b border-white/5', isRTL && 'flex-row-reverse')}>
+      <div className={cn('flex items-center justify-between px-5 py-3 border-b border-white/[0.06]', isRTL && 'flex-row-reverse')}>
         <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
-          <ScrollText className="h-4 w-4 text-amber-500" />
-          <span className="text-sm font-semibold">{t('dashboard.recentActivity')}</span>
+          <ScrollText className="h-4 w-4 text-[#18B13A]" />
+          <span className="text-sm font-semibold text-white">{t('dashboard.recentActivity')}</span>
         </div>
         {recent.length > 0 && (
-          <span className="text-[10px] text-muted-foreground font-mono">{recent.length}</span>
+          <span className="text-[10px] text-slate-500 font-mono">{recent.length}</span>
         )}
       </div>
       <div className="p-4 max-h-[420px] overflow-y-auto">
         {recent.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+          <div className="flex flex-col items-center justify-center py-12 text-slate-500">
             <ScrollText className="h-8 w-8 mb-2 opacity-20" />
             <span className="text-sm">{t('dashboard.noActivity')}</span>
           </div>
@@ -53,24 +53,22 @@ export function RecentActivity() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2, delay: 0.02 * Math.min(i, 10) }}
                   className={cn(
-                    'flex items-start gap-3 p-2.5 rounded-lg hover:bg-white/[0.03] transition-colors group',
+                    'flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.03] transition-colors group',
                     isRTL && 'flex-row-reverse'
                   )}
                 >
-                  <div className={cn('p-1 rounded-md shrink-0 mt-0.5', cfg.bg)}>
-                    <Icon className={cn('h-3 w-3', cfg.color)} />
+                  <div className={cn('p-1 rounded-lg shrink-0 mt-0.5', cfg.bg)}>
+                    <Icon className={cn('h-3.5 w-3.5', cfg.color)} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-start leading-relaxed">{log.message}</p>
-                    <div className={cn('flex items-center gap-2 mt-0.5', isRTL && 'flex-row-reverse')}>
-                      <span className="text-[10px] text-muted-foreground font-mono">
-                        {new Date(log.timestamp).toLocaleTimeString()}
-                      </span>
-                      {log.source && (
-                        <span className="text-[10px] text-muted-foreground/50 font-mono">{log.source}</span>
-                      )}
-                    </div>
+                    <p className="text-sm text-slate-300 leading-tight">{log.message}</p>
+                    {log.details && (
+                      <p className="text-[11px] text-slate-600 mt-0.5 truncate">{log.details}</p>
+                    )}
                   </div>
+                  <span className="text-[10px] text-slate-600 shrink-0 font-mono">
+                    {new Date(log.timestamp).toLocaleTimeString()}
+                  </span>
                 </motion.div>
               );
             })}

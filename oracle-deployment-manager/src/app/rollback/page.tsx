@@ -6,8 +6,10 @@ import { RollbackManager } from '@/components/rollback/rollback-manager';
 export default function RollbackPage() {
   return (
     <AppLayout>
+      <div className="us-page-bg min-h-screen">
       <div className="space-y-4">
         <RollbackManager />
+      </div>
       </div>
     </AppLayout>
   );

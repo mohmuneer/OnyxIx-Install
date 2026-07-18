@@ -6,8 +6,10 @@ import { ProfileManager } from '@/components/profiles/profile-manager';
 export default function ProfilesPage() {
   return (
     <AppLayout>
+      <div className="us-page-bg min-h-screen">
       <div className="space-y-4">
         <ProfileManager />
+      </div>
       </div>
     </AppLayout>
   );
