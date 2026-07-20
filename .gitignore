@@ -4,6 +4,7 @@ node_modules/
 .env*
 *.tsbuildinfo
 next-env.d.ts
+data/
 
 # Large source directories (PDFs already copied to public/docs/)
 accounting-doc/
