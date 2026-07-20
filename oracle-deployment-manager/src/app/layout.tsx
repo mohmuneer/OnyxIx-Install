@@ -23,8 +23,8 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ultimate Solutions | Enterprise Platform",
-  description: "Ultimate Solutions Enterprise Administration Platform - Oracle Deployment Manager",
+  title: "Onyx IX | متطلبات تركيب نظام Onyx IX",
+  description: "Onyx IX System Installation Requirements - متطلبات تركيب نظام Onyx IX",
 };
 
 export const viewport = "width=device-width, initial-scale=1, maximum-scale=5";
