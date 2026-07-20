@@ -64,6 +64,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArchitectureDataEditor } from '@/components/architecture/architecture-data-editor';
 import { useArchitectureStore } from '@/stores/architecture-store';
+import { CanEdit } from '@/components/ui/can-edit';
 
 import {
   Tooltip as TooltipUI,
@@ -224,10 +225,12 @@ export function ArchitecturePage() {
                 </p>
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => setEditorOpen(true)} className="gap-1.5 text-xs text-amber-500 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl">
-              <Pencil className="h-3.5 w-3.5" />
-              {isRTL ? 'تعديل' : 'Edit'}
-            </Button>
+            <CanEdit>
+              <Button variant="ghost" size="sm" onClick={() => setEditorOpen(true)} className="gap-1.5 text-xs text-amber-500 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl">
+                <Pencil className="h-3.5 w-3.5" />
+                {isRTL ? 'تعديل' : 'Edit'}
+              </Button>
+            </CanEdit>
           </motion.div>
 
           {/* ── Architecture Flow Diagram ── */}
@@ -632,7 +635,9 @@ export function ArchitecturePage() {
       </AnimatePresence>
 
       {/* Editor Dialog */}
-      <ArchitectureDataEditor open={editorOpen} onClose={() => setEditorOpen(false)} />
+      <CanEdit>
+        <ArchitectureDataEditor open={editorOpen} onClose={() => setEditorOpen(false)} />
+      </CanEdit>
     </AppLayout>
   );
 }
@@ -700,10 +705,12 @@ function ToolDetailContent({
         </div>
         <div className={cn('flex items-center gap-1', isRTL && 'flex-row-reverse')}>
           {!editing ? (
-            <Button variant="ghost" size="sm" onClick={() => setEditing(true)} className="h-8 gap-1 text-amber-500 hover:text-amber-500 hover:bg-amber-500/10">
-              <Pencil className="h-3.5 w-3.5" />
-              <span className="text-[10px]">{isRTL ? 'تعديل' : 'Edit'}</span>
-            </Button>
+            <CanEdit>
+              <Button variant="ghost" size="sm" onClick={() => setEditing(true)} className="h-8 gap-1 text-amber-500 hover:text-amber-500 hover:bg-amber-500/10">
+                <Pencil className="h-3.5 w-3.5" />
+                <span className="text-[10px]">{isRTL ? 'تعديل' : 'Edit'}</span>
+              </Button>
+            </CanEdit>
           ) : (
             <>
               <Button variant="ghost" size="sm" onClick={() => setEditing(false)} className="h-8 text-[10px]">

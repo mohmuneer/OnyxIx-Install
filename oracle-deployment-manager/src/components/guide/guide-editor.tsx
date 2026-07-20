@@ -5,6 +5,7 @@ import { useLocale } from '@/hooks/use-locale';
 import { useGuideStore, type GuidePhase, type GuideStep, PHASE_COLORS } from '@/stores/guide-store';
 import { useAppStore } from '@/stores/app-store';
 import { cn } from '@/lib/utils';
+import { CanEdit } from '@/components/ui/can-edit';
 import { EditorSidebar } from '@/components/ui/editor-sidebar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -221,9 +222,11 @@ export function DeploymentGuideEditor({ isRTL }: { isRTL: boolean }) {
 
   return (
     <>
-      <Button variant="outline" size="sm" className="h-8" onClick={() => setOpen(true)}>
-        <Pencil className={cn('h-3.5 w-3.5', isRTL ? 'ms-1' : 'me-1')} /> {t('common.edit')}
-      </Button>
+      <CanEdit>
+        <Button variant="outline" size="sm" className="h-8" onClick={() => setOpen(true)}>
+          <Pencil className={cn('h-3.5 w-3.5', isRTL ? 'ms-1' : 'me-1')} /> {t('common.edit')}
+        </Button>
+      </CanEdit>
 
       <EditorSidebar open={open} onClose={() => setOpen(false)} title={`${t('guide.title')} — Editor`} width="w-[480px]">
         <div className="space-y-3">

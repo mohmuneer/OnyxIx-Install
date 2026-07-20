@@ -8,6 +8,7 @@ import { DashboardDataEditor } from '@/components/dashboard/dashboard-data-edito
 import { useAppStore } from '@/stores/app-store';
 import { useDashboardStore } from '@/stores/dashboard-store';
 import { useLocale } from '@/hooks/use-locale';
+import { useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import {
@@ -19,6 +20,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { exportRequirementsPDF, exportRequirementsExcel } from '@/lib/export-requirements';
+import { CanEdit } from '@/components/ui/can-edit';
 
 export default function DashboardPage() {
   const { setSystemInfo, systemInfo } = useAppStore();
@@ -102,15 +104,17 @@ export default function DashboardPage() {
                   {isRTL ? 'آخر تحديث:' : 'Updated:'} {lastRefresh.toLocaleTimeString()}
                 </div>
               )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setEditorOpen(true)}
-                className="gap-1.5 text-xs text-[#FF9800] hover:text-[#FF9800] hover:bg-[#FF9800]/10 rounded-xl"
-              >
-                <Pencil className="h-3.5 w-3.5" />
-                {isRTL ? 'تعديل' : 'Edit'}
-              </Button>
+              <CanEdit>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setEditorOpen(true)}
+                  className="gap-1.5 text-xs text-[#FF9800] hover:text-[#FF9800] hover:bg-[#FF9800]/10 rounded-xl"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                  {isRTL ? 'تعديل' : 'Edit'}
+                </Button>
+              </CanEdit>
               <Button
                 variant="ghost"
                 size="sm"
@@ -141,7 +145,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Editor Dialog */}
-      <DashboardDataEditor open={editorOpen} onClose={() => setEditorOpen(false)} />
+      <CanEdit>
+        <DashboardDataEditor open={editorOpen} onClose={() => setEditorOpen(false)} />
+      </CanEdit>
     </AppLayout>
   );
 }

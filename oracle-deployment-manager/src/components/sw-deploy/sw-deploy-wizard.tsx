@@ -49,6 +49,7 @@ import { useLocale } from '@/hooks/use-locale';
 import { useSwDeployStore, type SwStep } from '@/stores/sw-deploy-store';
 import { SwDeployStepsEditor } from '@/components/sw-deploy/sw-deploy-steps-editor';
 import { cn } from '@/lib/utils';
+import { CanEdit } from '@/components/ui/can-edit';
 import { IX_MKDIR_PATHS, IX_COPY_OPERATIONS, IX_SOURCE_ROOT } from '@/lib/constants';
 
 const ICON_COMPONENTS: Record<string, any> = {
@@ -390,10 +391,12 @@ export function SwDeployWizard() {
           </p>
         </div>
         <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
-          <Button variant="ghost" size="sm" onClick={() => setStepsEditorOpen(true)} className="gap-1.5 text-xs text-amber-500 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl">
-            <Pencil className="h-3.5 w-3.5" />
-            {isRTL ? 'تعديل الخطوات' : 'Edit Steps'}
-          </Button>
+          <CanEdit>
+            <Button variant="ghost" size="sm" onClick={() => setStepsEditorOpen(true)} className="gap-1.5 text-xs text-amber-500 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl">
+              <Pencil className="h-3.5 w-3.5" />
+              {isRTL ? 'تعديل الخطوات' : 'Edit Steps'}
+            </Button>
+          </CanEdit>
           <Button variant="outline" onClick={checkPaths} disabled={isChecking || isExecuting || !!executingStep}>
             {isChecking ? <Loader2 className={cn('h-4 w-4 animate-spin', isRTL ? 'ms-2' : 'me-2')} /> : <Search className={cn('h-4 w-4', isRTL ? 'ms-2' : 'me-2')} />}
             {isRTL ? 'تحقق' : 'Check'}
@@ -742,7 +745,9 @@ export function SwDeployWizard() {
         </DialogContent>
       </Dialog>
       {/* Steps Editor Dialog */}
-      <SwDeployStepsEditor open={stepsEditorOpen} onClose={() => setStepsEditorOpen(false)} />
+      <CanEdit>
+        <SwDeployStepsEditor open={stepsEditorOpen} onClose={() => setStepsEditorOpen(false)} />
+      </CanEdit>
     </div>
   );
 }

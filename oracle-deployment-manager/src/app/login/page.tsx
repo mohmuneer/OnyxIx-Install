@@ -1,40 +1,90 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Database, Eye, EyeOff, ArrowRight, Shield, Server, Globe } from 'lucide-react';
+import { Database, Eye, EyeOff, ArrowRight, Shield, Server, Globe, UserCog, User as UserIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useLocale } from '@/hooks/use-locale';
+import { useAuthStore, loadAuthFromStorage } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [selectedRole, setSelectedRole] = useState<'admin' | 'user'>('user');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
   const { isRTL } = useLocale();
+  const { login, isLoggedIn } = useAuthStore();
+  const { login: loginAction } = useAuthStore();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  useEffect(() => {
+    const stored = loadAuthFromStorage();
+    if (stored.role) {
+      loginAction(stored.username, stored.role);
+      router.replace('/dashboard');
+    }
+  }, [loginAction, router]);
+
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
+    if (!username.trim()) {
+      setError(isRTL ? 'يرجى إدخال اسم المستخدم' : 'Please enter username');
+      return;
+    }
+    if (!password.trim()) {
+      setError(isRTL ? 'يرجى إدخال كلمة المرور' : 'Please enter password');
+      return;
+    }
+
     setLoading(true);
+    const adminPass = selectedRole === 'admin' ? 'admin123' : '';
+    const userPass = selectedRole === 'user' ? 'user123' : '';
+    const expectedPass = selectedRole === 'admin' ? adminPass : userPass;
+
     setTimeout(() => {
-      router.push('/dashboard');
+      if (password === expectedPass) {
+        login(username.trim(), selectedRole);
+        router.push('/dashboard');
+      } else {
+        setError(isRTL ? 'كلمة المرور غير صحيحة' : 'Incorrect password');
+        setLoading(false);
+      }
     }, 800);
   };
 
   const features = [
-    { icon: Server, title: isRTL ? 'إدارة الخوادم' : 'Server Management', desc: isRTL ? 'مراقبة وإدارة خوادم Oracle' : 'Monitor & manage Oracle servers' },
-    { icon: Shield, title: isRTL ? 'أمان متقدم' : 'Advanced Security', desc: isRTL ? 'حماية البيانات والأنظمة' : 'Protect data & systems' },
+    { icon: Server, title: isRTL ? 'إدارة الخوادم' : 'Server Management', desc: isRTL ? 'مراقبة وإدارة خوادم' : 'Monitor & manage servers' },
+    { icon: Shield, title: isRTL ? 'صلاحيات متعددة' : 'Multi-level Roles', desc: isRTL ? 'مدير نظام ومستخدم عادي' : 'Admin and normal user' },
     { icon: Globe, title: isRTL ? 'منصة موحدة' : 'Unified Platform', desc: isRTL ? 'كل أدواتك في مكان واحد' : 'All tools in one place' },
+  ];
+
+  const roles = [
+    {
+      id: 'admin' as const,
+      icon: UserCog,
+      label: isRTL ? 'مدير النظام' : 'Administrator',
+      desc: isRTL ? 'صلاحية كاملة للتعديل والإدارة' : 'Full edit and manage access',
+      passwordHint: isRTL ? 'كلمة المرور: admin123' : 'Password: admin123',
+    },
+    {
+      id: 'user' as const,
+      icon: UserIcon,
+      label: isRTL ? 'مستخدم عادي' : 'Normal User',
+      desc: isRTL ? 'صلاحية مشاهدة فقط بدون تعديل' : 'View-only, no edit access',
+      passwordHint: isRTL ? 'كلمة المرور: user123' : 'Password: user123',
+    },
   ];
 
   return (
     <div className="min-h-screen us-login-bg flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#18B13A]/[0.03] blur-[100px]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full bg-[#3A3A96]/[0.05] blur-[80px]" />
@@ -42,7 +92,6 @@ export default function LoginPage() {
       </div>
 
       <div className={cn('w-full max-w-5xl flex items-center gap-12 relative z-10', isRTL && 'flex-row-reverse')}>
-        {/* Left: Branding & Features */}
         <motion.div
           initial={{ opacity: 0, x: isRTL ? 40 : -40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -93,35 +142,60 @@ export default function LoginPage() {
           </div>
         </motion.div>
 
-        {/* Right: Login Card */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.1, ease: [0.4, 0, 0.2, 1] }}
           className="w-full max-w-md"
         >
-          {/* Mobile logo */}
           <div className={cn('flex lg:hidden items-center gap-3 mb-8', isRTL && 'flex-row-reverse')}>
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#18B13A] to-[#15803D] flex items-center justify-center shadow-lg shadow-[#18B13A]/20">
               <Database className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="font-bold text-white">Ultimate Solutions</h1>
-              <p className="text-[10px] text-slate-500">Enterprise Platform</p>
+              <h1 className="font-bold text-white">Onyx IX</h1>
+              <p className="text-[10px] text-slate-500">{isRTL ? 'متطلبات التركيب' : 'Requirements'}</p>
             </div>
           </div>
 
           <div className="rounded-3xl bg-[#111827]/80 backdrop-blur-2xl border border-white/[0.06] shadow-2xl shadow-black/40 p-8">
-            <div className={cn('space-y-1 mb-8', isRTL && 'text-end')}>
+            <div className={cn('space-y-1 mb-6', isRTL && 'text-end')}>
               <h2 className="text-xl font-bold text-white">
-                {isRTL ? 'تسجيل الدخول' : 'Welcome Back'}
+                {isRTL ? 'تسجيل الدخول' : 'Sign In'}
               </h2>
               <p className="text-sm text-slate-500">
-                {isRTL ? 'أدخل بيانات الدخول للوصول للمنصة' : 'Sign in to access the platform'}
+                {isRTL ? 'اختر نوع المستخدم وأدخل البيانات' : 'Select role and enter credentials'}
               </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-5">
+            {/* Role Selection */}
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              {roles.map((role) => {
+                const RoleIcon = role.icon;
+                const isSelected = selectedRole === role.id;
+                return (
+                  <button
+                    key={role.id}
+                    type="button"
+                    onClick={() => setSelectedRole(role.id)}
+                    className={cn(
+                      'flex flex-col items-center gap-2 p-3 rounded-xl border transition-all text-center',
+                      isSelected
+                        ? 'border-[#18B13A] bg-[#18B13A]/10 ring-1 ring-[#18B13A]/30'
+                        : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'
+                    )}
+                  >
+                    <RoleIcon className={cn('h-5 w-5', isSelected ? 'text-[#18B13A]' : 'text-slate-400')} />
+                    <span className={cn('text-xs font-medium', isSelected ? 'text-[#18B13A]' : 'text-slate-300')}>
+                      {role.label}
+                    </span>
+                    <span className="text-[9px] text-slate-500 leading-tight">{role.desc}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label className="text-xs font-medium text-slate-400">
                   {isRTL ? 'اسم المستخدم' : 'Username'}
@@ -156,6 +230,17 @@ export default function LoginPage() {
                 </div>
               </div>
 
+              <p className="text-[10px] text-slate-600 text-center">
+                {selectedRole === 'admin'
+                  ? (isRTL ? 'كلمة مرور المدير: admin123' : 'Admin password: admin123')
+                  : (isRTL ? 'كلمة مرور المستخدم: user123' : 'User password: user123')
+                }
+              </p>
+
+              {error && (
+                <p className="text-xs text-red-400 text-center">{error}</p>
+              )}
+
               <Button
                 type="submit"
                 disabled={loading}
@@ -174,7 +259,7 @@ export default function LoginPage() {
 
             <div className="mt-6 pt-6 border-t border-white/[0.06]">
               <p className="text-center text-[11px] text-slate-600">
-                &copy; {new Date().getFullYear()} Ultimate Solutions. All rights reserved.
+                &copy; {new Date().getFullYear()} Onyx IX. All rights reserved.
               </p>
             </div>
           </div>

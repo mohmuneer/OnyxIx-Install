@@ -41,6 +41,7 @@ import { useDeploymentDocsStore, type DocStep, type DocAttachment } from '@/stor
 import { DeploymentDocsEditor } from '@/components/deployment/deployment-docs-editor';
 import { useLocale } from '@/hooks/use-locale';
 import { useAppStore } from '@/stores/app-store';
+import { CanEdit } from '@/components/ui/can-edit';
 
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -485,15 +486,17 @@ export function DeploymentDocs() {
                   <Badge variant="outline" className="text-[10px]">
                     {engineerFiles} ملف
                   </Badge>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setEditorOpen(true)}
-                    className="gap-1.5 text-xs text-amber-500 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl h-7"
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                    تعديل
-                  </Button>
+                  <CanEdit>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setEditorOpen(true)}
+                      className="gap-1.5 text-xs text-amber-500 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl h-7"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      تعديل
+                    </Button>
+                  </CanEdit>
                 </div>
               </div>
             </CardHeader>
@@ -527,15 +530,17 @@ export function DeploymentDocs() {
                   <Badge variant="outline" className="text-[10px]">
                     {consultantFiles} ملف
                   </Badge>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setEditorOpen(true)}
-                    className="gap-1.5 text-xs text-amber-500 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl h-7"
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                    تعديل
-                  </Button>
+                  <CanEdit>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setEditorOpen(true)}
+                      className="gap-1.5 text-xs text-amber-500 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl h-7"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      تعديل
+                    </Button>
+                  </CanEdit>
                 </div>
               </div>
             </CardHeader>
@@ -556,11 +561,13 @@ export function DeploymentDocs() {
         </TabsContent>
       </Tabs>
 
-      <DeploymentDocsEditor
-        open={editorOpen}
-        onClose={() => setEditorOpen(false)}
-        filterTab={activeTab === 'engineers' ? 'engineer' : 'consultant'}
-      />
+      <CanEdit>
+        <DeploymentDocsEditor
+          open={editorOpen}
+          onClose={() => setEditorOpen(false)}
+          filterTab={activeTab === 'engineers' ? 'engineer' : 'consultant'}
+        />
+      </CanEdit>
     </div>
   );
 }
