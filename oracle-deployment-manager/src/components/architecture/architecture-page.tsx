@@ -60,6 +60,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { ArchitectureDataEditor } from '@/components/architecture/architecture-data-editor';
 import { useArchitectureStore } from '@/stores/architecture-store';
 
@@ -313,9 +315,9 @@ export function ArchitecturePage() {
                                     <IconComp className={cn('h-4 w-4 transition-colors', highlighted ? 'text-amber-400' : tc.text)} />
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <p className={cn('text-sm font-medium truncate', highlighted && 'text-amber-300')}>{tool.name}</p>
+                                    <p className={cn('text-sm font-medium truncate', highlighted && 'text-amber-300')}>{tool.customName || tool.name}</p>
                                     {showDetailed && (
-                                      <p className="text-[10px] text-muted-foreground truncate mt-0.5">{t(tool.roleTitle)}</p>
+                                      <p className="text-[10px] text-muted-foreground truncate mt-0.5">{tool.customRoleTitle || t(tool.roleTitle)}</p>
                                     )}
                                   </div>
                                   {status && (
@@ -648,8 +650,34 @@ function ToolDetailContent({
   isRTL: boolean;
   t: (key: string) => string;
 }) {
+  const { updateTool } = useArchitectureStore();
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({
+    customName: tool.customName || '',
+    customRoleTitle: tool.customRoleTitle || '',
+    customDescription: tool.customDescription || '',
+    customIntegrationBenefit: tool.customIntegrationBenefit || '',
+    customNotes: tool.customNotes || '',
+  });
+
   const tc = TIER_COLORS[tool.tier];
   const IconComp = ICON_MAP[tool.icon] || Globe;
+
+  const displayName = tool.customName || tool.name;
+  const displayRole = tool.customRoleTitle || t(tool.roleTitle);
+  const displayDesc = tool.customDescription || t(tool.description);
+  const displayBenefit = tool.customIntegrationBenefit || t(tool.integrationBenefit);
+
+  const handleSave = () => {
+    updateTool(tool.id, {
+      customName: form.customName || undefined,
+      customRoleTitle: form.customRoleTitle || undefined,
+      customDescription: form.customDescription || undefined,
+      customIntegrationBenefit: form.customIntegrationBenefit || undefined,
+      customNotes: form.customNotes || undefined,
+    });
+    setEditing(false);
+  };
 
   return (
     <>
@@ -659,8 +687,8 @@ function ToolDetailContent({
             <IconComp className={cn('h-5 w-5', tc.text)} />
           </div>
           <div>
-            <h2 className="font-semibold text-sm">{tool.name}</h2>
-            {status && (
+            <h2 className="font-semibold text-sm">{displayName}</h2>
+            {!editing && status && (
               <div className={cn('flex items-center gap-1.5 mt-0.5', isRTL && 'flex-row-reverse')}>
                 <StatusDot status={status} />
                 <span className="text-[10px] text-muted-foreground">
@@ -670,32 +698,85 @@ function ToolDetailContent({
             )}
           </div>
         </div>
-        <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
-          <X className="h-4 w-4" />
-        </Button>
+        <div className={cn('flex items-center gap-1', isRTL && 'flex-row-reverse')}>
+          {!editing ? (
+            <Button variant="ghost" size="sm" onClick={() => setEditing(true)} className="h-8 gap-1 text-amber-500 hover:text-amber-500 hover:bg-amber-500/10">
+              <Pencil className="h-3.5 w-3.5" />
+              <span className="text-[10px]">{isRTL ? 'تعديل' : 'Edit'}</span>
+            </Button>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" onClick={() => setEditing(false)} className="h-8 text-[10px]">
+                {isRTL ? 'إلغاء' : 'Cancel'}
+              </Button>
+              <Button size="sm" onClick={handleSave} className="h-8 text-[10px] bg-[#22C55E] hover:bg-[#16A34A] text-white">
+                {isRTL ? 'حفظ' : 'Save'}
+              </Button>
+            </>
+          )}
+          <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
       <ScrollArea className="flex-1 p-4">
-        <div className="space-y-5">
-          {[
-            { label: 'arch.drawer.role', content: t(tool.roleTitle) },
-            { label: 'arch.drawer.description', content: t(tool.description) },
-            { label: 'arch.drawer.integrationBenefit', content: t(tool.integrationBenefit) },
-          ].map((section) => (
-            <div key={section.label}>
-              <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t(section.label)}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{section.content}</p>
-            </div>
-          ))}
-          {tool.relatedGuideTitle && (
+        {editing ? (
+          <div className="space-y-4">
             <div>
-              <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t('arch.drawer.relatedGuide')}</h3>
-              <Badge variant="secondary" className="text-xs gap-1.5">
-                <BookOpen className="h-3 w-3" />
-                {t(tool.relatedGuideTitle)}
-              </Badge>
+              <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{isRTL ? 'اسم المكون' : 'Component Name'}</Label>
+              <Input value={form.customName} onChange={(e) => setForm({ ...form, customName: e.target.value })} className="mt-1 bg-white/[0.04] border-white/[0.08] text-white text-sm" placeholder={tool.name} />
             </div>
-          )}
-        </div>
+            <div>
+              <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{isRTL ? 'الدور' : 'Role'}</Label>
+              <Input value={form.customRoleTitle} onChange={(e) => setForm({ ...form, customRoleTitle: e.target.value })} className="mt-1 bg-white/[0.04] border-white/[0.08] text-white text-xs" placeholder={t(tool.roleTitle)} />
+            </div>
+            <div>
+              <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{isRTL ? 'الوصف' : 'Description'}</Label>
+              <textarea value={form.customDescription} onChange={(e) => setForm({ ...form, customDescription: e.target.value })} className="mt-1 w-full min-h-[80px] rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-xs p-2 outline-none resize-y" placeholder={t(tool.description)} />
+            </div>
+            <div>
+              <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{isRTL ? 'فائدة التكامل' : 'Integration Benefit'}</Label>
+              <textarea value={form.customIntegrationBenefit} onChange={(e) => setForm({ ...form, customIntegrationBenefit: e.target.value })} className="mt-1 w-full min-h-[60px] rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-xs p-2 outline-none resize-y" placeholder={t(tool.integrationBenefit)} />
+            </div>
+            <div>
+              <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{isRTL ? 'ملاحظات إضافية' : 'Additional Notes'}</Label>
+              <textarea value={form.customNotes} onChange={(e) => setForm({ ...form, customNotes: e.target.value })} className="mt-1 w-full min-h-[60px] rounded-lg bg-white/[0.04] border border-white/[0.08] text-white text-xs p-2 outline-none resize-y" placeholder={isRTL ? 'أضف ملاحظات أو تفاصيل إضافية...' : 'Add notes or additional details...'} />
+            </div>
+            <p className="text-[10px] text-muted-foreground">
+              {isRTL ? 'اترك الحقل فارغاً للإبقاء على النص الأصلي' : 'Leave empty to keep original text'}
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            <div>
+              <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t('arch.drawer.role')}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{displayRole}</p>
+            </div>
+            <div>
+              <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t('arch.drawer.description')}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{displayDesc}</p>
+            </div>
+            <div>
+              <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t('arch.drawer.integrationBenefit')}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{displayBenefit}</p>
+            </div>
+            {tool.relatedGuideTitle && (
+              <div>
+                <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{t('arch.drawer.relatedGuide')}</h3>
+                <Badge variant="secondary" className="text-xs gap-1.5">
+                  <BookOpen className="h-3 w-3" />
+                  {t(tool.relatedGuideTitle)}
+                </Badge>
+              </div>
+            )}
+            {tool.customNotes && (
+              <div>
+                <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">{isRTL ? 'ملاحظات' : 'Notes'}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{tool.customNotes}</p>
+              </div>
+            )}
+          </div>
+        )}
       </ScrollArea>
     </>
   );

@@ -8,6 +8,11 @@ export interface ArchitectureTool {
   relatedGuideTitle?: string;
   serviceKey?: 'weblogicStatus' | 'databaseStatus' | 'listenerStatus';
   icon: string;
+  customName?: string;
+  customRoleTitle?: string;
+  customDescription?: string;
+  customIntegrationBenefit?: string;
+  customNotes?: string;
 }
 
 export interface JourneyStep {
