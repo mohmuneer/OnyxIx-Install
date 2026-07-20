@@ -37,13 +37,13 @@ export interface BrandingData {
 
 export const DEFAULT_BRANDING: BrandingData = {
   colors: {
-    primary: '#18B13A',
-    secondary: '#3A3A96',
+    primary: '#2563EB',
+    secondary: '#0891B2',
     success: '#22C55E',
     warning: '#F59E0B',
     danger: '#EF4444',
-    sidebarActive: '#15C138',
-    background: '#0B0F17',
+    sidebarActive: '#3B82F6',
+    background: '#0B1120',
     surface: '#111827',
   },
   font: {
@@ -51,11 +51,11 @@ export const DEFAULT_BRANDING: BrandingData = {
     size: '14px',
     borderRadius: '0.75rem',
   },
-  theme: 'ultimate_default',
+  theme: 'corporate_blue',
   logo: {
     companyName: 'Ultimate Solutions',
     systemName: 'Onyx IX',
-    logoUrl: null,
+    logoUrl: '/images/logo.png',
   },
   login: {
     title: 'Onyx IX',
