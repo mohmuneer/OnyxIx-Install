@@ -1,0 +1,7 @@
+{
+  "name": "ix-tools",
+  "private": true,
+  "scripts": {
+    "postinstall": "cd oracle-deployment-manager && npm install"
+  }
+}

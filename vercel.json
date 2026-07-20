@@ -1,6 +1,4 @@
 {
-  "framework": "nextjs",
-  "installCommand": "cd oracle-deployment-manager && npm install",
-  "buildCommand": "cd oracle-deployment-manager && npx next build",
+  "buildCommand": "cd oracle-deployment-manager && npm run build",
   "outputDirectory": "oracle-deployment-manager/.next"
 }
