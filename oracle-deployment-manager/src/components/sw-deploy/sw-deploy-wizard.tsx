@@ -40,27 +40,24 @@ import {
   RefreshCw,
   FileText,
   Link2,
+  Type,
+  Zap,
+  Pencil,
 } from 'lucide-react';
 import { useAppStore } from '@/stores/app-store';
 import { useLocale } from '@/hooks/use-locale';
+import { useSwDeployStore, type SwStep } from '@/stores/sw-deploy-store';
+import { SwDeployStepsEditor } from '@/components/sw-deploy/sw-deploy-steps-editor';
 import { cn } from '@/lib/utils';
 import { IX_MKDIR_PATHS, IX_COPY_OPERATIONS, IX_SOURCE_ROOT } from '@/lib/constants';
 
-interface StepDef {
-  id: string;
-  name: string;
-  nameAr: string;
-  icon: any;
-}
+const ICON_COMPONENTS: Record<string, any> = {
+  Search, FolderTree, Shield, Copy, ArrowRightLeft, Type, RotateCcw, Zap,
+};
 
-const IX_STEPS: StepDef[] = [
-  { id: 'check', name: 'Verify Source Files', nameAr: 'التحقق من الملفات المصدرية', icon: Search },
-  { id: 'mkdir', name: 'Create Directories', nameAr: 'إنشاء المجلدات', icon: FolderTree },
-  { id: 'rename', name: 'Rename Originals', nameAr: 'إعادة تسمية الأصلية', icon: Shield },
-  { id: 'copy', name: 'Copy Files', nameAr: 'نسخ الملفات', icon: Copy },
-  { id: 'variables', name: 'Replace Variables', nameAr: 'استبدال المتغيرات', icon: ArrowRightLeft },
-  { id: 'restart', name: 'Restart Services', nameAr: 'إعادة التشغيل', icon: RotateCcw },
-];
+function resolveIcon(iconName: string) {
+  return ICON_COMPONENTS[iconName] || Zap;
+}
 
 interface PathCheckResult {
   missingDirs: string[];
@@ -76,11 +73,14 @@ interface ExecuteResults {
   filesCopied: { src: string; dest: string; success: boolean; error?: string }[];
   filesRenamed: { path: string; success: boolean; error?: string }[];
   variablesReplaced: { path: string; count: number; success: boolean; error?: string }[];
+  fontsInstalled: { file: string; success: boolean; error?: string }[];
+  servicesRestarted: { service: string; action: string; success: boolean; error?: string }[];
 }
 
 export function SwDeployWizard() {
   const { addNotification, addLog } = useAppStore();
   const { t, isRTL } = useLocale();
+  const { steps: storeSteps, init: initSteps } = useSwDeployStore();
   const logEndRef = useRef<HTMLDivElement>(null);
 
   const [hostname, setHostname] = useState('');
@@ -107,7 +107,9 @@ export function SwDeployWizard() {
   const [retryOutput, setRetryOutput] = useState('');
 
   const [confirmDialog, setConfirmDialog] = useState(false);
+  const [stepsEditorOpen, setStepsEditorOpen] = useState(false);
 
+  const ixSteps = storeSteps.filter((s) => s.enabled);
   const allSourceOk = pathCheck && pathCheck.missingSourceFiles.length === 0;
 
   const formatDuration = (ms: number) => {
@@ -126,6 +128,10 @@ export function SwDeployWizard() {
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    initSteps();
+  }, [initSteps]);
 
   useEffect(() => {
     if (selectedDisk) checkPaths();
@@ -256,12 +262,14 @@ export function SwDeployWizard() {
 
       // Merge step results into existing executeResults
       setExecuteResults((prev) => {
-        const base: ExecuteResults = prev || { dirsCreated: [], filesCopied: [], filesRenamed: [], variablesReplaced: [] };
+        const base: ExecuteResults = prev || { dirsCreated: [], filesCopied: [], filesRenamed: [], variablesReplaced: [], fontsInstalled: [], servicesRestarted: [] };
         return {
           dirsCreated: [...base.dirsCreated, ...(data.results?.dirsCreated || [])],
           filesCopied: [...base.filesCopied, ...(data.results?.filesCopied || [])],
           filesRenamed: [...base.filesRenamed, ...(data.results?.filesRenamed || [])],
           variablesReplaced: [...base.variablesReplaced, ...(data.results?.variablesReplaced || [])],
+          fontsInstalled: [...base.fontsInstalled, ...(data.results?.fontsInstalled || [])],
+          servicesRestarted: [...base.servicesRestarted, ...(data.results?.servicesRestarted || [])],
         };
       });
 
@@ -309,6 +317,12 @@ export function SwDeployWizard() {
     executeResults.variablesReplaced.filter((r) => !r.success).forEach((r) => {
       failedItems.push({ type: 'variable', path: r.path });
     });
+    (executeResults.fontsInstalled || []).filter((r) => !r.success).forEach((r) => {
+      failedItems.push({ type: 'font', path: r.file });
+    });
+    (executeResults.servicesRestarted || []).filter((r) => !r.success).forEach((r) => {
+      failedItems.push({ type: 'service', path: `${r.service}:${r.action}` });
+    });
 
     if (failedItems.length === 0) return;
 
@@ -350,10 +364,16 @@ export function SwDeployWizard() {
     filesFail: executeResults.filesCopied.filter((r) => !r.success).length,
     varsOk: executeResults.variablesReplaced.filter((r) => r.success).length,
     varsFail: executeResults.variablesReplaced.filter((r) => !r.success).length,
+    fontsOk: (executeResults.fontsInstalled || []).filter((r) => r.success).length,
+    fontsFail: (executeResults.fontsInstalled || []).filter((r) => !r.success).length,
+    servicesOk: (executeResults.servicesRestarted || []).filter((r) => r.success).length,
+    servicesFail: (executeResults.servicesRestarted || []).filter((r) => !r.success).length,
     hasFailed: executeResults.dirsCreated.some((r) => !r.success) ||
       executeResults.filesCopied.some((r) => !r.success) ||
       executeResults.filesRenamed.some((r) => !r.success) ||
-      executeResults.variablesReplaced.some((r) => !r.success),
+      executeResults.variablesReplaced.some((r) => !r.success) ||
+      (executeResults.fontsInstalled || []).some((r) => !r.success) ||
+      (executeResults.servicesRestarted || []).some((r) => !r.success),
   } : null;
 
   return (
@@ -363,13 +383,17 @@ export function SwDeployWizard() {
         <div>
           <h2 className={cn('text-lg font-semibold flex items-center gap-2', isRTL && 'flex-row-reverse')}>
             <Rocket className="h-5 w-5 text-orange-500" />
-            {isRTL ? 'خطوات إعادة التركيب' : 'Reinstallation Steps'}
+            {isRTL ? 'خطوات بعد التركيب' : 'Post-Install Steps'}
           </h2>
           <p className="text-sm text-muted-foreground">
             {isRTL ? 'تحقق → أدخل البيانات → نفّذ → أعد المحاولة' : 'Verify → Configure → Execute → Retry'}
           </p>
         </div>
         <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
+          <Button variant="ghost" size="sm" onClick={() => setStepsEditorOpen(true)} className="gap-1.5 text-xs text-amber-500 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl">
+            <Pencil className="h-3.5 w-3.5" />
+            {isRTL ? 'تعديل الخطوات' : 'Edit Steps'}
+          </Button>
           <Button variant="outline" onClick={checkPaths} disabled={isChecking || isExecuting || !!executingStep}>
             {isChecking ? <Loader2 className={cn('h-4 w-4 animate-spin', isRTL ? 'ms-2' : 'me-2')} /> : <Search className={cn('h-4 w-4', isRTL ? 'ms-2' : 'me-2')} />}
             {isRTL ? 'تحقق' : 'Check'}
@@ -482,9 +506,9 @@ export function SwDeployWizard() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="divide-y">
-            {IX_STEPS.map((step, idx) => {
+            {ixSteps.map((step, idx) => {
               const isExpanded = expandedStep === step.id;
-              const Icon = step.icon;
+              const Icon = resolveIcon(step.icon);
               const isActive = currentStepIdx === idx;
               const isStepRunning = executingStep === step.id;
               const canRunStep = step.id !== 'check' && !isExecuting && !executingStep;
@@ -494,13 +518,16 @@ export function SwDeployWizard() {
                 (step.id === 'rename' && summary?.renamesOk !== undefined) ||
                 (step.id === 'copy' && summary?.filesOk !== undefined) ||
                 (step.id === 'variables' && summary?.varsOk !== undefined) ||
-                (step.id === 'restart' && currentStepIdx === -1 && !isExecuting)
+                (step.id === 'fonts' && summary?.fontsOk !== undefined) ||
+                (step.id === 'services' && summary?.servicesOk !== undefined)
               );
               const hasError = executeResults !== null && (
                 (step.id === 'mkdir' && summary && summary.dirsFail > 0) ||
                 (step.id === 'copy' && summary && summary.filesFail > 0) ||
                 (step.id === 'rename' && summary && summary.renamesFail > 0) ||
-                (step.id === 'variables' && summary && summary.varsFail > 0)
+                (step.id === 'variables' && summary && summary.varsFail > 0) ||
+                (step.id === 'fonts' && summary && summary.fontsFail > 0) ||
+                (step.id === 'services' && summary && summary.servicesFail > 0)
               );
 
               return (
@@ -547,19 +574,14 @@ export function SwDeployWizard() {
                         }
                         return null;
                       })()}
-                      <Badge variant="outline" className="text-[10px]">{idx + 1}/{IX_STEPS.length}</Badge>
+                      <Badge variant="outline" className="text-[10px]">{idx + 1}/{ixSteps.length}</Badge>
                       <ChevronRight className={cn('h-4 w-4 text-muted-foreground transition-transform', isExpanded && 'rotate-90')} />
                     </div>
                   </div>
                   {isExpanded && (
                     <div className="px-4 pb-3 bg-muted/30">
                       <p className="text-[11px] text-muted-foreground italic">
-                        {step.id === 'check' && (isRTL ? `التحقق من ${pathCheck?.totalSourceFiles || '...'} ملف في ${IX_SOURCE_ROOT}` : `Verify ${pathCheck?.totalSourceFiles || '...'} files in ${IX_SOURCE_ROOT}`)}
-                        {step.id === 'mkdir' && (isRTL ? `تنفيذ mkdir_1010.bat على ${selectedDisk}:` : `Run mkdir_1010.bat on ${selectedDisk}:`)}
-                        {step.id === 'rename' && (isRTL ? 'إعادة تسمية الملفات الأصلية إلى _def' : 'Rename original files to _def backup')}
-                        {step.id === 'copy' && (isRTL ? `نسخ ${IX_COPY_OPERATIONS.length} ملف من المصدر إلى ${selectedDisk}:\\` : `Copy ${IX_COPY_OPERATIONS.length} files to ${selectedDisk}:\\`)}
-                        {step.id === 'variables' && (isRTL ? `استبدال {{HOST}} و{{SERVICE_NAME}} في ملفات الإعدادات` : `Replace {{HOST}} and {{SERVICE_NAME}} in config files`)}
-                        {step.id === 'restart' && (isRTL ? 'إعادة تشغيل خدمات Node Manager وForms وReports' : 'Restart Node Manager, Forms, Reports services')}
+                        {isRTL ? step.descriptionAr : step.description}
                       </p>
                     </div>
                   )}
@@ -602,6 +624,12 @@ export function SwDeployWizard() {
               <Badge variant={summary.varsFail > 0 ? 'destructive' : 'default'} className="text-xs">
                 <ArrowRightLeft className="h-3 w-3 me-1" /> {summary.varsOk}/{summary.varsOk + summary.varsFail} {isRTL ? 'متغيرات' : 'vars'}
               </Badge>
+              <Badge variant={summary.fontsFail > 0 ? 'destructive' : 'default'} className="text-xs">
+                <Type className="h-3 w-3 me-1" /> {summary.fontsOk}/{summary.fontsOk + summary.fontsFail} {isRTL ? 'خط' : 'fonts'}
+              </Badge>
+              <Badge variant={summary.servicesFail > 0 ? 'destructive' : 'default'} className="text-xs">
+                <RotateCcw className="h-3 w-3 me-1" /> {summary.servicesOk}/{summary.servicesOk + summary.servicesFail} {isRTL ? 'خدمة' : 'services'}
+              </Badge>
             </div>
 
             {/* Failed items detail */}
@@ -622,6 +650,12 @@ export function SwDeployWizard() {
                   ))}
                   {executeResults!.variablesReplaced.filter((r) => !r.success).map((r) => (
                     <p key={r.path} className="text-[11px] font-mono text-red-600 break-all">✗ VAR: {r.path} — {r.error}</p>
+                  ))}
+                  {(executeResults!.fontsInstalled || []).filter((r) => !r.success).map((r) => (
+                    <p key={r.file} className="text-[11px] font-mono text-red-600 break-all">✗ FONT: {r.file} — {r.error}</p>
+                  ))}
+                  {(executeResults!.servicesRestarted || []).filter((r) => !r.success).map((r, i) => (
+                    <p key={i} className="text-[11px] font-mono text-red-600 break-all">✗ SVC: {r.service} ({r.action}) — {r.error}</p>
                   ))}
                 </div>
               </div>
@@ -707,6 +741,8 @@ export function SwDeployWizard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Steps Editor Dialog */}
+      <SwDeployStepsEditor open={stepsEditorOpen} onClose={() => setStepsEditorOpen(false)} />
     </div>
   );
 }

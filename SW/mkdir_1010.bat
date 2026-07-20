@@ -7,8 +7,6 @@ mkdir D:\ultimate\onyxw\othr\usr_imgs
 mkdir D:\ultimate\onyxw\othr\usr_rprts
 mkdir D:\ultimate\onyxw\othr\wrk_area
 mkdir D:\ultimate\onyxw\rprt 
-mkdir D:\ultimate\onyxws
-mkdir D:\ultimate\onyxwp
 mkdir D:\oracle\ofm\ofr 
 mkdir D:\oracle\java\jdk7
 mkdir D:\oracle\dbs\db1\product\21.3.0.0\db_1

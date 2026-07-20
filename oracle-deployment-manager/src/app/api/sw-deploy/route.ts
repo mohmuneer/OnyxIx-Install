@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { FileEngine } from '@/lib/file-engine';
-import { IX_MKDIR_PATHS, IX_COPY_OPERATIONS, IX_REN_OPERATIONS, IX_SOURCE_ROOT, IX_MKDIR_BAT } from '@/lib/constants';
+import { IX_MKDIR_PATHS, IX_COPY_OPERATIONS, IX_REN_OPERATIONS, IX_SOURCE_ROOT, IX_MKDIR_BAT, IX_FONTS_SOURCE } from '@/lib/constants';
 import path from 'path';
 import fs from 'fs/promises';
 
@@ -10,6 +10,8 @@ type StepResult = {
   filesCopied: { src: string; dest: string; success: boolean; error?: string }[];
   filesRenamed: { path: string; success: boolean; error?: string }[];
   variablesReplaced: { path: string; count: number; success: boolean; error?: string }[];
+  fontsInstalled: { file: string; success: boolean; error?: string }[];
+  servicesRestarted: { service: string; action: string; success: boolean; error?: string }[];
 };
 
 export async function POST(request: NextRequest) {
@@ -131,6 +133,8 @@ interface ExecuteResult {
     renamesOk: number;
     renamesFailed: number;
   };
+  fontsInstalled: number;
+  servicesRestarted: number;
 }
 
 const ts = () => new Date().toLocaleTimeString();
@@ -426,6 +430,201 @@ async function stepRestart(services: string[] | undefined, lines: string[]): Pro
   }
 }
 
+async function stepFonts(disk: string, results: StepResult, lines: string[]): Promise<void> {
+  lines.push(`\n[${ts()}] ── Step 6: Installing barcode fonts ──`);
+
+  const fontsTarget = path.join(`${disk}`, 'oracle', 'ofm', 'ofr', 'as1', 'forms', 'fonts');
+  try { await fs.mkdir(fontsTarget, { recursive: true }); } catch {}
+
+  let fontFiles: string[] = [];
+  try {
+    const entries = await fs.readdir(IX_FONTS_SOURCE);
+    fontFiles = entries.filter((f) => f.toLowerCase().endsWith('.ttf') || f.toLowerCase().endsWith('.otf'));
+  } catch (err: any) {
+    lines.push(`[${ts()}] ✗ Cannot read fonts source: ${err.message}`);
+    const fallback = ['IDAutomationC128L.ttf', 'IDAutomationHC39M Code 39 Barcode.ttf', 'IDAutomationUPCEANS.ttf'];
+    for (const f of fallback) {
+      const src = path.join(IX_FONTS_SOURCE, f);
+      const dest = path.join(fontsTarget, f);
+      try {
+        await fs.copyFile(src, dest);
+        results.fontsInstalled.push({ file: f, success: true });
+        lines.push(`[${ts()}] ✓ ${f} → ${dest}`);
+      } catch (err2: any) {
+        results.fontsInstalled.push({ file: f, success: false, error: err2.message });
+        lines.push(`[${ts()}] ✗ ${f}: ${err2.message}`);
+      }
+    }
+    return;
+  }
+
+  for (const f of fontFiles) {
+    const src = path.join(IX_FONTS_SOURCE, f);
+    const dest = path.join(fontsTarget, f);
+    try {
+      await fs.copyFile(src, dest);
+      results.fontsInstalled.push({ file: f, success: true });
+      lines.push(`[${ts()}] ✓ ${f} → ${dest}`);
+    } catch (err: any) {
+      results.fontsInstalled.push({ file: f, success: false, error: err.message });
+      lines.push(`[${ts()}] ✗ ${f}: ${err.message}`);
+    }
+  }
+
+  const winFonts = 'C:\\Windows\\Fonts';
+  for (const f of fontFiles) {
+    const src = path.join(IX_FONTS_SOURCE, f);
+    const dest = path.join(winFonts, f);
+    try {
+      await fs.copyFile(src, dest);
+      results.fontsInstalled.push({ file: f, success: true });
+      lines.push(`[${ts()}] ✓ ${f} → ${winFonts}`);
+    } catch {
+      lines.push(`[${ts()}] — ${f}: cannot write to Windows\\Fonts (expected on dev)`);
+    }
+  }
+}
+
+async function stepServices(disk: string, results: StepResult, lines: string[]): Promise<void> {
+  lines.push(`\n[${ts()}] ── Step 7: Service management ──`);
+  const { execSync } = await import('child_process');
+
+  const opmnctl = path.join(`${disk}`, 'oracle', 'ofm', 'ofr', 'asinst1', 'bin', 'opmnctl.bat');
+  const domainHome = path.join(`${disk}`, 'oracle', 'ofm', 'ofr', 'user_projects', 'domains', 'ultimate');
+
+  // 1. Stop OPMN managed components
+  lines.push(`\n[${ts()}] ── Phase 1: Stop OPMN ──`);
+  try {
+    execSync(`cmd /c "${opmnctl}" stopproc ias-component=onx-iax_rprt_aps`, { timeout: 15000, windowsHide: true });
+    lines.push(`[${ts()}] ✓ OPMN: stopped onx-iax_rprt_aps`);
+    results.servicesRestarted.push({ service: 'OPMN', action: 'stop-aps', success: true });
+  } catch { lines.push(`[${ts()}] — OPMN stop-aps skip`); results.servicesRestarted.push({ service: 'OPMN', action: 'stop-aps', success: true }); }
+
+  const reportComponents = ['onx-iax_rprt_aps', 'onx-iax_rprt_ars', 'onx-iax_rprt_gls', 'onx-iax_rprt_prl', 'onx-iax_rprt_inv', 'onx-iax_rprt_hrs', 'onx-iax_rprt_fng'];
+  for (const comp of reportComponents) {
+    try {
+      execSync(`cmd /c "${opmnctl}" stopproc ias-component=${comp}`, { timeout: 10000, windowsHide: true });
+      lines.push(`[${ts()}] ✓ OPMN stop: ${comp}`);
+      results.servicesRestarted.push({ service: comp, action: 'stop', success: true });
+    } catch {
+      lines.push(`[${ts()}] — ${comp} not running`);
+      results.servicesRestarted.push({ service: comp, action: 'stop', success: true });
+    }
+  }
+
+  // 2. Kill all processes
+  lines.push(`\n[${ts()}] ── Phase 2: Kill processes ──`);
+  const procs = ['nodeManager.exe', 'frmsrv.exe', 'rwserver.exe', 'java.exe', 'weblogic.exe'];
+  for (const proc of procs) {
+    try {
+      execSync(`taskkill /F /IM ${proc} 2>nul`, { timeout: 5000, windowsHide: true });
+      lines.push(`[${ts()}] ✓ Killed: ${proc}`);
+      results.servicesRestarted.push({ service: proc, action: 'kill', success: true });
+    } catch {
+      lines.push(`[${ts()}] — ${proc} not running`);
+      results.servicesRestarted.push({ service: proc, action: 'kill', success: true });
+    }
+  }
+
+  // 3. Clear report server cache
+  lines.push(`\n[${ts()}] ── Phase 3: Clear report server cache ──`);
+  const reportCacheDir = path.join(`${disk}`, 'oracle', 'ofm', 'ofr', 'asinst1', 'reports', 'server');
+  try {
+    const files = await fs.readdir(reportCacheDir);
+    for (const f of files) {
+      if (f.endsWith('.dat')) {
+        try {
+          await fs.unlink(path.join(reportCacheDir, f));
+          lines.push(`[${ts()}] ✓ Deleted cache: ${f}`);
+          results.servicesRestarted.push({ service: `cache:${f}`, action: 'delete', success: true });
+        } catch (err: any) {
+          lines.push(`[${ts()}] ✗ Cannot delete: ${f} — ${err.message}`);
+          results.servicesRestarted.push({ service: `cache:${f}`, action: 'delete', success: false, error: err.message });
+        }
+      }
+    }
+  } catch {
+    lines.push(`[${ts()}] — Report cache dir not found`);
+  }
+
+  // 4. Wait before starting
+  lines.push(`\n[${ts()}] Waiting 3s before starting services...`);
+  await new Promise((r) => setTimeout(r, 3000));
+
+  // 5. Start Node Manager
+  lines.push(`\n[${ts()}] ── Phase 4: Start Node Manager ──`);
+  try {
+    const nmCmd = `cmd /c start "Node Manager" cmd /c "cd /d ${domainHome}\\bin && startNodeManager.cmd"`;
+    execSync(nmCmd, { timeout: 10000, windowsHide: true });
+    lines.push(`[${ts()}] ✓ Node Manager started`);
+    results.servicesRestarted.push({ service: 'Node Manager', action: 'start', success: true });
+  } catch (err: any) {
+    lines.push(`[${ts()}] ✗ Node Manager: ${err.message}`);
+    results.servicesRestarted.push({ service: 'Node Manager', action: 'start', success: false, error: err.message });
+  }
+
+  // 6. Wait for NM
+  lines.push(`Waiting 5s for Node Manager to initialize...`);
+  await new Promise((r) => setTimeout(r, 5000));
+
+  // 7. Start Admin Server
+  lines.push(`\n[${ts()}] ── Phase 5: Start Admin Server ──`);
+  try {
+    const adminCmd = `cmd /c start "Admin Server" cmd /c "cd /d ${domainHome}\\bin && startWebLogic.cmd"`;
+    execSync(adminCmd, { timeout: 10000, windowsHide: true });
+    lines.push(`[${ts()}] ✓ Admin Server starting`);
+    results.servicesRestarted.push({ service: 'Admin Server', action: 'start', success: true });
+  } catch (err: any) {
+    lines.push(`[${ts()}] ✗ Admin Server: ${err.message}`);
+    results.servicesRestarted.push({ service: 'Admin Server', action: 'start', success: false, error: err.message });
+  }
+
+  // 8. Wait for Admin
+  lines.push(`Waiting 10s for Admin Server to initialize...`);
+  await new Promise((r) => setTimeout(r, 10000));
+
+  // 9. Start WLS_FORMS
+  lines.push(`\n[${ts()}] ── Phase 6: Start WLS_FORMS ──`);
+  try {
+    const formsCmd = `cmd /c start "WLS_FORMS" cmd /c "cd /d ${domainHome}\\bin && startManagedWebLogic.cmd WLS_FORMS"`;
+    execSync(formsCmd, { timeout: 10000, windowsHide: true });
+    lines.push(`[${ts()}] ✓ WLS_FORMS starting`);
+    results.servicesRestarted.push({ service: 'WLS_FORMS', action: 'start', success: true });
+  } catch (err: any) {
+    lines.push(`[${ts()}] ✗ WLS_FORMS: ${err.message}`);
+    results.servicesRestarted.push({ service: 'WLS_FORMS', action: 'start', success: false, error: err.message });
+  }
+
+  // 10. Start WLS_REPORTS
+  lines.push(`\n[${ts()}] ── Phase 7: Start WLS_REPORTS ──`);
+  try {
+    const reportsCmd = `cmd /c start "WLS_REPORTS" cmd /c "cd /d ${domainHome}\\bin && startManagedWebLogic.cmd WLS_REPORTS"`;
+    execSync(reportsCmd, { timeout: 10000, windowsHide: true });
+    lines.push(`[${ts()}] ✓ WLS_REPORTS starting`);
+    results.servicesRestarted.push({ service: 'WLS_REPORTS', action: 'start', success: true });
+  } catch (err: any) {
+    lines.push(`[${ts()}] ✗ WLS_REPORTS: ${err.message}`);
+    results.servicesRestarted.push({ service: 'WLS_REPORTS', action: 'start', success: false, error: err.message });
+  }
+
+  // 11. Wait for managed servers
+  lines.push(`Waiting 15s for managed servers to initialize...`);
+  await new Promise((r) => setTimeout(r, 15000));
+
+  // 12. Start OPMN managed components
+  lines.push(`\n[${ts()}] ── Phase 8: Start OPMN components ──`);
+  for (const comp of reportComponents) {
+    try {
+      execSync(`cmd /c "${opmnctl}" startproc ias-component=${comp}`, { timeout: 10000, windowsHide: true });
+      lines.push(`[${ts()}] ✓ OPMN start: ${comp}`);
+      results.servicesRestarted.push({ service: comp, action: 'start', success: true });
+    } catch (err: any) {
+      lines.push(`[${ts()}] ✗ OPMN start ${comp}: ${err.message}`);
+      results.servicesRestarted.push({ service: comp, action: 'start', success: false, error: err.message });
+    }
+  }
+}
+
 // ──────────────────────────────────────────────
 // Execute single step
 // ──────────────────────────────────────────────
@@ -435,7 +634,9 @@ const STEP_MAP: Record<string, (disk: string, variables: Record<string, string>,
   rename: (disk, _v, results, lines) => stepRename(disk, results, lines),
   copy: (disk, _v, results, lines) => stepCopy(disk, results, lines),
   variables: (disk, variables, results, lines) => stepVariables(disk, variables, results, lines),
-  restart: (_disk, _v, _results, lines, services) => stepRestart(services, lines),
+  fonts: (disk, _v, results, lines) => stepFonts(disk, results, lines),
+  services: (disk, _v, results, lines) => stepServices(disk, results, lines),
+  restart: (disk, _v, results, lines) => stepServices(disk, results, lines),
 };
 
 async function executeStep(
@@ -452,6 +653,8 @@ async function executeStep(
     filesCopied: [],
     filesRenamed: [],
     variablesReplaced: [],
+    fontsInstalled: [],
+    servicesRestarted: [],
   };
   const lines: string[] = [];
   const timingStart = Date.now();
@@ -487,6 +690,8 @@ async function executeStep(
       renamesOk,
       renamesFailed,
     },
+    fontsInstalled: results.fontsInstalled.length,
+    servicesRestarted: results.servicesRestarted.length,
   };
 }
 
@@ -504,6 +709,8 @@ async function executeAll(
     filesCopied: [],
     filesRenamed: [],
     variablesReplaced: [],
+    fontsInstalled: [],
+    servicesRestarted: [],
   };
   const stepTimings: { stepId: string; durationMs: number }[] = [];
   const allLines: string[] = [];
@@ -517,7 +724,8 @@ async function executeAll(
     { id: 'rename', fn: () => stepRename(disk, results, allLines) },
     { id: 'copy', fn: () => stepCopy(disk, results, allLines) },
     { id: 'variables', fn: () => stepVariables(disk, variables, results, allLines) },
-    { id: 'restart', fn: () => stepRestart(services, allLines) },
+    { id: 'fonts', fn: () => stepFonts(disk, results, allLines) },
+    { id: 'services', fn: () => stepServices(disk, results, allLines) },
   ];
 
   for (const step of steps) {
@@ -539,10 +747,12 @@ async function executeAll(
   allLines.push(`[${ts()}]   Renames: ${renamesOk}/${results.filesRenamed.length} OK`);
   allLines.push(`[${ts()}]   Files: ${filesOk}/${results.filesCopied.length} OK`);
   allLines.push(`[${ts()}]   Vars: ${results.variablesReplaced.filter((r) => r.success).length}/${results.variablesReplaced.length} OK`);
+  allLines.push(`[${ts()}]   Fonts: ${results.fontsInstalled.filter((r) => r.success).length}/${results.fontsInstalled.length} OK`);
+  allLines.push(`[${ts()}]   Services: ${results.servicesRestarted.filter((r) => r.success).length}/${results.servicesRestarted.length} OK`);
   allLines.push(`[${ts()}] ═══════════════════════════`);
 
   return {
-    success: dirsFailed === 0 && filesFailed === 0 && renamesFailed === 0,
+    success: dirsFailed === 0 && filesFailed === 0 && renamesFailed === 0 && results.fontsInstalled.every((r) => r.success) && results.servicesRestarted.every((r) => r.success),
     output: allLines.join('\n'),
     stepTimings,
     results,
@@ -557,6 +767,8 @@ async function executeAll(
       renamesOk,
       renamesFailed,
     },
+    fontsInstalled: results.fontsInstalled.length,
+    servicesRestarted: results.servicesRestarted.length,
   };
 }
 

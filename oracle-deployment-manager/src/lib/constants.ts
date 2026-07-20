@@ -180,3 +180,6 @@ export const IX_SOURCE_ROOT = 'C:\\Users\\MOHAMMED\\Desktop\\IX-TOOLS\\SW\\cfg';
 // Actual bat files
 export const IX_MKDIR_BAT = 'C:\\Users\\MOHAMMED\\Desktop\\IX-TOOLS\\SW\\mkdir_1010.bat';
 export const IX_INSTALL_BAT = 'C:\\Users\\MOHAMMED\\Desktop\\IX-TOOLS\\SW\\install.bat';
+
+// Fonts directory (barcode fonts)
+export const IX_FONTS_SOURCE = 'C:\\Users\\MOHAMMED\\Desktop\\IX-TOOLS\\SW\\FONTS';

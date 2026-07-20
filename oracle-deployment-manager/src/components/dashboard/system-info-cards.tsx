@@ -1,239 +1,242 @@
 'use client';
 
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Monitor,
-  Cpu,
-  HardDrive,
-  MemoryStick,
-  Wifi,
   Database,
+  Server,
+  Cpu,
+  MemoryStick,
+  HardDrive,
+  Wifi,
   Globe,
-  Activity,
+  Shield,
+  Download,
+  FileSpreadsheet,
+  FileText,
 } from 'lucide-react';
-import type { SystemInfo } from '@/types';
 import { useLocale } from '@/hooks/use-locale';
+import { useDashboardStore } from '@/stores/dashboard-store';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import type { DashboardSection, RequirementCategory } from '@/types';
 
-function StatusDot({ status }: { status: string }) {
-  return (
-    <span className="relative flex items-center justify-center">
-      <span className={cn(
-        'w-2 h-2 rounded-full status-dot',
-        status === 'running' ? 'bg-[#22C55E] text-[#22C55E]' :
-        status === 'stopped' ? 'bg-[#EF4444] text-[#EF4444]' :
-        'bg-[#FF9800] text-[#FF9800]'
-      )} />
-    </span>
-  );
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
+  Database,
+  Server,
+  Cpu,
+  MemoryStick,
+  HardDrive,
+  Wifi,
+  Globe,
+  Shield,
+  Download,
+};
+
+function SectionIcon({ type, className, style }: { type: string; className?: string; style?: React.CSSProperties }) {
+  const IconComponent = ICON_MAP[type] || Server;
+  return <IconComponent className={className} style={style} />;
 }
 
-function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-}
-
-function ProgressRing({ percent, color, size = 40 }: { percent: number; color: string; size?: number }) {
-  const r = (size - 6) / 2;
-  const c = 2 * Math.PI * r;
-  const offset = c - (percent / 100) * c;
-
-  return (
-    <svg width={size} height={size} className="shrink-0 -rotate-90">
-      <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={4} />
-      <motion.circle
-        cx={size / 2}
-        cy={size / 2}
-        r={r}
-        fill="none"
-        stroke={color}
-        strokeWidth={4}
-        strokeLinecap="round"
-        strokeDasharray={c}
-        initial={{ strokeDashoffset: c }}
-        animate={{ strokeDashoffset: offset }}
-        transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
-      />
-    </svg>
-  );
+function HwIcon({ type, className }: { type: string; className?: string }) {
+  const IconComponent = ICON_MAP[type] || Cpu;
+  return <IconComponent className={className} />;
 }
 
 interface Props {
-  info: SystemInfo | null;
-  loading: boolean;
+  onEdit: () => void;
+  onExportPDF: () => void;
+  onExportExcel: () => void;
 }
 
-const STATUS_LABELS: Record<string, Record<string, string>> = {
-  ar: { running: 'يعمل', stopped: 'متوقف', error: 'خطأ' },
-  en: { running: 'Running', stopped: 'Stopped', error: 'Error' },
-  fr: { running: 'En cours', stopped: 'Arrêté', error: 'Erreur' },
-  de: { running: 'Aktiv', stopped: 'Gestoppt', error: 'Fehler' },
-  es: { running: 'Activo', stopped: 'Detenido', error: 'Error' },
-  tr: { running: 'Çalışıyor', stopped: 'Durdurulmuş', error: 'Hata' },
-};
+export function SystemInfoCards({ onEdit, onExportPDF, onExportExcel }: Props) {
+  const { isRTL } = useLocale();
+  const { data, init } = useDashboardStore();
 
-export function SystemInfoCards({ info, loading }: Props) {
-  const { t, isRTL, locale } = useLocale();
+  useEffect(() => {
+    init();
+  }, [init]);
 
-  if (loading && !info) {
-    return (
-      <div className="grid gap-3 grid-cols-2 sm:grid-cols-4 lg:grid-cols-4">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="rounded-2xl bg-[#111827] border border-white/[0.06] p-4 animate-pulse">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-white/[0.04]" />
-              <div className="h-3 bg-white/[0.04] rounded w-16" />
+  return (
+    <div className="space-y-4">
+      {/* Server Specifications */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {data.sections.map((section, si) => (
+          <SectionCard key={section.id} section={section} si={si} isRTL={isRTL} />
+        ))}
+      </div>
+
+      {/* Onyx IX Requirements */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="rounded-2xl bg-[#111827] border border-[#FF9800]/20 overflow-hidden"
+      >
+        <div className={cn('flex items-center justify-between px-5 py-4 border-b border-[#FF9800]/20', isRTL && 'flex-row-reverse')}>
+          <div className={cn('flex items-center gap-3', isRTL && 'flex-row-reverse')}>
+            <div className="p-2.5 rounded-xl bg-[#FF9800]/10">
+              <Download className="h-5 w-5 text-[#FF9800]" />
             </div>
-            <div className="h-6 bg-white/[0.04] rounded w-20 mb-1" />
-            <div className="h-2 bg-white/[0.04] rounded-full mt-2" />
+            <h3 className="text-sm font-bold text-white">
+              {isRTL ? 'متطلبات تركيب نظام Onyx IX' : 'ONYX IX Installation Requirements'}
+            </h3>
+          </div>
+          <div className={cn('flex items-center gap-1', isRTL && 'flex-row-reverse')}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onExportPDF}
+              className="gap-1 text-[10px] text-[#38BDF8] hover:text-[#38BDF8] hover:bg-[#38BDF8]/10 rounded-xl"
+            >
+              <FileText className="h-3 w-3" />
+              PDF
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onExportExcel}
+              className="gap-1 text-[10px] text-[#18B13A] hover:text-[#18B13A] hover:bg-[#18B13A]/10 rounded-xl"
+            >
+              <FileSpreadsheet className="h-3 w-3" />
+              Excel
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onEdit}
+              className="gap-1 text-[10px] text-slate-500 hover:text-white hover:bg-white/[0.06] rounded-xl"
+            >
+              {isRTL ? 'تعديل' : 'Edit'}
+            </Button>
+          </div>
+        </div>
+
+        <div className="p-5">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {data.requirements.map((req, ri) => (
+              <RequirementCard key={ri} req={req} ri={ri} isRTL={isRTL} />
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function SectionCard({ section, si, isRTL }: { section: DashboardSection; si: number; isRTL: boolean }) {
+  return (
+    <motion.div
+      key={section.id}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 * si }}
+      className="rounded-2xl bg-[#111827] border overflow-hidden"
+      style={{ borderColor: `${section.color}33` }}
+    >
+      {/* Header */}
+      <div className={cn('flex items-center gap-3 px-5 py-4 border-b', isRTL && 'flex-row-reverse')} style={{ borderColor: `${section.color}33` }}>
+        <div className="p-2.5 rounded-xl" style={{ backgroundColor: `${section.color}1a` }}>
+          <SectionIcon type={section.iconType} className="h-5 w-5" style={{ color: section.color }} />
+        </div>
+        <h3 className="text-sm font-bold text-white">{section.title[isRTL ? 'ar' : 'en']}</h3>
+      </div>
+
+      <div className="p-5 space-y-5">
+        {section.hw.length > 0 && (
+          <div>
+            <div className={cn('flex items-center gap-2 mb-3', isRTL && 'flex-row-reverse')}>
+              <div className="h-px flex-1 bg-white/[0.06]" />
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                {isRTL ? 'مواصفات العتاد' : 'H/W SPECIFICATION'}
+              </span>
+              <div className="h-px flex-1 bg-white/[0.06]" />
+            </div>
+            <div className="space-y-1">
+              {section.hw.map((item, hi) => (
+                <motion.div
+                  key={hi}
+                  initial={{ opacity: 0, x: isRTL ? 10 : -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.05 * hi + 0.2 * si }}
+                  className={cn(
+                    'flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-white/[0.03] transition-colors',
+                    isRTL && 'flex-row-reverse'
+                  )}
+                >
+                  <div className="p-1.5 rounded-lg bg-white/[0.04]">
+                    <HwIcon type={item.iconType} className="h-3.5 w-3.5 text-slate-400" />
+                  </div>
+                  <span className="text-xs text-slate-500 w-20 shrink-0">{item.label[isRTL ? 'ar' : 'en']}</span>
+                  <span className="text-xs font-medium font-mono text-slate-300">{item.value}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {section.sw.length > 0 && (
+          <div>
+            <div className={cn('flex items-center gap-2 mb-3', isRTL && 'flex-row-reverse')}>
+              <div className="h-px flex-1 bg-white/[0.06]" />
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                {isRTL ? 'مواصفات البرمجيات' : 'S/W SPECIFICATION'}
+              </span>
+              <div className="h-px flex-1 bg-white/[0.06]" />
+            </div>
+            <div className="space-y-1">
+              {section.sw.map((item, si2) => (
+                <motion.div
+                  key={si2}
+                  initial={{ opacity: 0, x: isRTL ? 10 : -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.05 * si2 + 0.3 }}
+                  className={cn(
+                    'flex items-center gap-3 py-2 px-3 rounded-xl hover:bg-white/[0.03] transition-colors',
+                    isRTL && 'flex-row-reverse'
+                  )}
+                >
+                  <div className="p-1.5 rounded-lg bg-white/[0.04]">
+                    <Globe className="h-3.5 w-3.5 text-slate-400" />
+                  </div>
+                  <span className="text-xs text-slate-500 w-28 shrink-0">{item.label[isRTL ? 'ar' : 'en']}</span>
+                  <span className="text-xs font-medium text-slate-300">{item.value}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </motion.div>
+  );
+}
+
+function RequirementCard({ req, ri, isRTL }: { req: RequirementCategory; ri: number; isRTL: boolean }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: 0.1 * ri + 0.4 }}
+      className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
+    >
+      <div className={cn('flex items-center gap-2 mb-3', isRTL && 'flex-row-reverse')}>
+        <Shield className="h-3.5 w-3.5 text-[#FF9800]" />
+        <span className="text-xs font-semibold text-white">{req.category[isRTL ? 'ar' : 'en']}</span>
+      </div>
+      <div className="space-y-1.5">
+        {req.items.map((item, ii) => (
+          <div
+            key={ii}
+            className={cn(
+              'flex items-center gap-2 py-1.5 px-2.5 rounded-lg hover:bg-white/[0.03] transition-colors',
+              isRTL && 'flex-row-reverse'
+            )}
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-[#FF9800]/60 shrink-0" />
+            <span className="text-[11px] text-slate-400">{item[isRTL ? 'ar' : 'en']}</span>
           </div>
         ))}
       </div>
-    );
-  }
-
-  if (!info) return null;
-
-  const diskPercent = info.diskSpace.total > 0 ? Math.round((info.diskSpace.used / info.diskSpace.total) * 100) : 0;
-  const memPercent = info.memory.total > 0 ? Math.round((info.memory.used / info.memory.total) * 100) : 0;
-
-  const labels = STATUS_LABELS[locale] || STATUS_LABELS.en;
-
-  const cards = [
-    {
-      label: t('dashboard.server'),
-      value: info.hostname,
-      sub: info.os,
-      icon: Monitor,
-      color: 'text-[#A78BFA]',
-      bg: 'bg-[#A78BFA]/10',
-      gradient: 'from-[#A78BFA]/20 to-transparent',
-    },
-    {
-      label: 'CPU',
-      value: `${info.cpu.usage}%`,
-      sub: `${info.cpu.cores} ${t('dashboard.cores')}`,
-      icon: Cpu,
-      color: 'text-[#22C55E]',
-      bg: 'bg-[#22C55E]/10',
-      gradient: 'from-[#22C55E]/20 to-transparent',
-      percent: info.cpu.usage,
-      percentColor: '#22C55E',
-    },
-    {
-      label: t('dashboard.memory'),
-      value: `${memPercent}%`,
-      sub: `${formatBytes(info.memory.used)} / ${formatBytes(info.memory.total)}`,
-      icon: MemoryStick,
-      color: 'text-[#38BDF8]',
-      bg: 'bg-[#38BDF8]/10',
-      gradient: 'from-[#38BDF8]/20 to-transparent',
-      percent: memPercent,
-      percentColor: '#38BDF8',
-    },
-    {
-      label: t('dashboard.disk'),
-      value: `${diskPercent}%`,
-      sub: `${formatBytes(info.diskSpace.free)} ${t('dashboard.freeOf')} ${formatBytes(info.diskSpace.total)}`,
-      icon: HardDrive,
-      color: 'text-[#FF9800]',
-      bg: 'bg-[#FF9800]/10',
-      gradient: 'from-[#FF9800]/20 to-transparent',
-      percent: diskPercent,
-      percentColor: '#FF9800',
-    },
-    {
-      label: 'Java',
-      value: info.javaVersion || 'N/A',
-      sub: null,
-      icon: Activity,
-      color: 'text-[#38BDF8]',
-      bg: 'bg-[#38BDF8]/10',
-      gradient: 'from-[#38BDF8]/20 to-transparent',
-    },
-    {
-      label: 'Oracle Forms',
-      value: info.formsVersion || 'N/A',
-      sub: `${t('dashboard.reports')}: ${info.reportsVersion || 'N/A'}`,
-      icon: Globe,
-      color: 'text-[#FF9800]',
-      bg: 'bg-[#FF9800]/10',
-      gradient: 'from-[#FF9800]/20 to-transparent',
-    },
-    {
-      label: 'WebLogic',
-      value: labels[info.weblogicStatus] || info.weblogicStatus,
-      sub: `${t('dashboard.nodeManager')}: ${labels[info.nodeManagerStatus] || info.nodeManagerStatus}`,
-      icon: Wifi,
-      color: info.weblogicStatus === 'running' ? 'text-[#22C55E]' : 'text-[#EF4444]',
-      bg: info.weblogicStatus === 'running' ? 'bg-[#22C55E]/10' : 'bg-[#EF4444]/10',
-      gradient: info.weblogicStatus === 'running' ? 'from-[#22C55E]/20 to-transparent' : 'from-[#EF4444]/20 to-transparent',
-      status: info.weblogicStatus,
-      subStatus: info.nodeManagerStatus,
-    },
-    {
-      label: t('dashboard.database'),
-      value: labels[info.databaseStatus] || info.databaseStatus,
-      sub: `${t('dashboard.listener')}: ${labels[info.listenerStatus] || info.listenerStatus}`,
-      icon: Database,
-      color: info.databaseStatus === 'running' ? 'text-[#22C55E]' : 'text-[#EF4444]',
-      bg: info.databaseStatus === 'running' ? 'bg-[#22C55E]/10' : 'bg-[#EF4444]/10',
-      gradient: info.databaseStatus === 'running' ? 'from-[#22C55E]/20 to-transparent' : 'from-[#EF4444]/20 to-transparent',
-      status: info.databaseStatus,
-      subStatus: info.listenerStatus,
-    },
-  ];
-
-  return (
-    <div className="grid gap-3 grid-cols-2 sm:grid-cols-4 lg:grid-cols-4">
-      {cards.map((card, i) => {
-        const Icon = card.icon;
-        return (
-          <motion.div
-            key={card.label}
-            initial={{ opacity: 0, y: 15, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.35, delay: 0.04 * i }}
-            className={cn(
-              'rounded-2xl bg-[#111827] border border-white/[0.06] p-4 stat-card-hover group relative overflow-hidden us-card-hover',
-              card.status && `border ${card.status === 'running' ? 'border-[#22C55E]/20' : 'border-[#EF4444]/20'}`
-            )}
-          >
-            <div className={cn('absolute top-0 inset-x-0 h-px bg-gradient-to-r opacity-60', card.gradient)} />
-
-            <div className={cn('flex items-center justify-between mb-3', isRTL && 'flex-row-reverse')}>
-              <div className={cn('p-2 rounded-xl transition-all', card.bg, 'group-hover:scale-110')}>
-                <Icon className={cn('h-4 w-4', card.color)} />
-              </div>
-              <span className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{card.label}</span>
-            </div>
-
-            <div className={cn('flex items-center gap-3', isRTL && 'flex-row-reverse')}>
-              <div className="flex-1 min-w-0">
-                <div className={cn('flex items-center gap-1.5', isRTL && 'flex-row-reverse')}>
-                  {card.status && <StatusDot status={card.status} />}
-                  <span className={cn('text-lg font-bold tracking-tight truncate', card.color)}>{card.value}</span>
-                </div>
-                {card.sub && (
-                  <p className="text-[10px] text-slate-500 truncate mt-0.5">{card.sub}</p>
-                )}
-                {card.subStatus && (
-                  <div className={cn('flex items-center gap-1 mt-1', isRTL && 'flex-row-reverse')}>
-                    <StatusDot status={card.subStatus} />
-                    <span className="text-[10px] text-slate-500">{labels[card.subStatus] || card.subStatus}</span>
-                  </div>
-                )}
-              </div>
-              {card.percent !== undefined && (
-                <ProgressRing percent={card.percent} color={card.percentColor} size={44} />
-              )}
-            </div>
-          </motion.div>
-        );
-      })}
-    </div>
+    </motion.div>
   );
 }

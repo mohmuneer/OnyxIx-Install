@@ -1,5 +1,5 @@
 ------------------- In Application Server -----------------------------------------------------------------------------------------------------
-java_home=D:\oracle\java\jdks\jdk7u76
+java_home=D:\oracle\java\jdks\jdk7
 as_home=D:\oracle\ofm\ofr\as1
 inst_home=D:\oracle\ofm\ofr\asinst1
 

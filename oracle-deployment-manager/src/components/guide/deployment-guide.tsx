@@ -3,93 +3,24 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLocale } from '@/hooks/use-locale';
 import { useAppStore } from '@/stores/app-store';
+import { useGuideStore, type GuidePhase } from '@/stores/guide-store';
+import { DeploymentGuideEditor } from './guide-editor';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
   BookOpen, CheckCircle2, Circle, ChevronDown, ChevronUp,
-  ExternalLink, RotateCcw, Server, Database, Globe2,
-  Terminal, Settings, MonitorCheck, ArrowDown,
+  RotateCcw, ArrowDown,
+  Terminal, Database, Globe2, Server, Settings, MonitorCheck,
+  FileText, Shield, Layers, Network,
 } from 'lucide-react';
 
-interface PhaseDef {
-  id: string;
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  bg: string;
-  border: string;
-  pdfHref: string;
-  stepKeys: string[];
-}
-
-const PHASES: PhaseDef[] = [
-  {
-    id: 'linux',
-    icon: Terminal,
-    color: 'text-orange-400',
-    bg: 'bg-orange-500/5',
-    border: 'border-orange-500/30',
-    pdfHref: '/docs/OracleLinux_8.9_Install_Guide_UltimateSolutions.pdf',
-    stepKeys: ['install', 'network', 'firewall', 'selinux', 'packages', 'oracleUser', 'kernel', 'limits', 'firewalld'],
-  },
-  {
-    id: 'database',
-    icon: Database,
-    color: 'text-red-400',
-    bg: 'bg-red-500/5',
-    border: 'border-red-500/30',
-    pdfHref: '/docs/Oracle21c_Install_Guide_UltimateSolutions.pdf',
-    stepKeys: ['uploadMedia', 'runInstaller', 'setPassword', 'createDB', 'configureListener', 'createService', 'testConn', 'createUsers', 'importData', 'checkListener'],
-  },
-  {
-    id: 'apex',
-    icon: Globe2,
-    color: 'text-cyan-400',
-    bg: 'bg-cyan-500/5',
-    border: 'border-cyan-500/30',
-    pdfHref: '/docs/Oracle21c_Install_Guide_UltimateSolutions.pdf',
-    stepKeys: ['installApex', 'configureApex', 'testApex', 'configureImages', 'backupApexConfig'],
-  },
-  {
-    id: 'weblogic',
-    icon: Server,
-    color: 'text-blue-400',
-    bg: 'bg-blue-500/5',
-    border: 'border-blue-500/30',
-    pdfHref: '/docs/AppServer_Browsers_Guide_UltimateSolutions.pdf',
-    stepKeys: ['installJdk', 'installWebLogic', 'createDomain', 'configNodeManager', 'startNodeManager', 'installFormsReports', 'applyPatch', 'configureForms', 'configureReports', 'createManagedServers', 'startServers'],
-  },
-  {
-    id: 'ords',
-    icon: Globe2,
-    color: 'text-teal-400',
-    bg: 'bg-teal-500/5',
-    border: 'border-teal-500/30',
-    pdfHref: '/docs/ORDS_APEX_SSL_Guide_UltimateSolutions.pdf',
-    stepKeys: ['installOrds', 'configureOrds', 'startOrds', 'sslCert', 'configureHttps', 'testOrdsAccess', 'backupOrdsConfig'],
-  },
-  {
-    id: 'ixConfig',
-    icon: Settings,
-    color: 'text-purple-400',
-    bg: 'bg-purple-500/5',
-    border: 'border-purple-500/30',
-    pdfHref: '/docs/Forms_Patch_17301874_Guide_UltimateSolutions.pdf',
-    stepKeys: ['createDirs', 'copyConfigFiles', 'replaceHost', 'replaceService', 'installWebUtil', 'installJarFiles', 'configureEnv', 'copyRegistry', 'copyFontConfig', 'restartServers'],
-  },
-  {
-    id: 'client',
-    icon: MonitorCheck,
-    color: 'text-green-400',
-    bg: 'bg-green-500/5',
-    border: 'border-green-500/30',
-    pdfHref: '/docs/POS_Server_Guide_UltimateSolutions.pdf',
-    stepKeys: ['installJre', 'configBrowser', 'addTrustedSite', 'disableSecurity', 'installCert', 'testForms', 'configPOS', 'testPOS', 'verifyPrinting', 'documentIPs'],
-  },
-];
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  Terminal, Database, Globe2, Server, Settings, MonitorCheck,
+  FileText, Shield, Layers, Network,
+};
 
 const STORAGE_KEY = 'ix-deployment-checklist';
 
@@ -107,6 +38,7 @@ function saveChecked(checked: Record<string, boolean>) {
 export function DeploymentGuide() {
   const { t, isRTL } = useLocale();
   const { addNotification } = useAppStore();
+  const { phases } = useGuideStore();
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [expandedPhases, setExpandedPhases] = useState<Record<string, boolean>>({});
 
@@ -126,9 +58,9 @@ export function DeploymentGuide() {
 
   const expandAll = useCallback(() => {
     const all: Record<string, boolean> = {};
-    PHASES.forEach((p) => { all[p.id] = true; });
+    phases.forEach((p) => { all[p.id] = true; });
     setExpandedPhases(all);
-  }, []);
+  }, [phases]);
 
   const collapseAll = useCallback(() => {
     setExpandedPhases({});
@@ -140,7 +72,7 @@ export function DeploymentGuide() {
     addNotification({ type: 'info', title: t('guide.resetChecklist'), message: '' });
   }, [addNotification, t]);
 
-  const totalSteps = useMemo(() => PHASES.reduce((sum, p) => sum + p.stepKeys.length, 0), []);
+  const totalSteps = useMemo(() => phases.reduce((sum, p) => sum + p.steps.length, 0), [phases]);
   const doneSteps = useMemo(() => Object.values(checked).filter(Boolean).length, [checked]);
   const progress = totalSteps > 0 ? Math.round((doneSteps / totalSteps) * 100) : 0;
 
@@ -153,6 +85,7 @@ export function DeploymentGuide() {
           <p className="text-muted-foreground text-start text-sm">{t('guide.subtitle')}</p>
         </div>
         <div className={cn('flex items-center gap-2 flex-wrap', isRTL && 'flex-row-reverse')}>
+          <DeploymentGuideEditor isRTL={isRTL} />
           <Button variant="outline" size="sm" onClick={expandAll} className="h-8">
             <ChevronDown className={cn('h-3.5 w-3.5', isRTL ? 'ms-1' : 'me-1')} /> All
           </Button>
@@ -184,11 +117,11 @@ export function DeploymentGuide() {
 
       {/* Phases */}
       <div className="space-y-3">
-        {PHASES.map((phase, idx) => {
-          const IconComp = phase.icon;
+        {phases.map((phase, idx) => {
+          const IconComp = ICON_MAP[phase.icon] || Settings;
           const isExpanded = expandedPhases[phase.id] ?? false;
-          const phaseDone = phase.stepKeys.filter((k) => checked[k]).length;
-          const phaseTotal = phase.stepKeys.length;
+          const phaseDone = phase.steps.filter((k) => checked[k.id]).length;
+          const phaseTotal = phase.steps.length;
           const phaseComplete = phaseDone === phaseTotal;
 
           return (
@@ -204,27 +137,29 @@ export function DeploymentGuide() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
-                      <h3 className="text-sm font-semibold">{t(`guide.phases.${phase.id}.title`)}</h3>
+                      <h3 className="text-sm font-semibold">{isRTL ? phase.titleAr || phase.title : phase.title}</h3>
                       {phaseComplete && (
                         <Badge variant="outline" className="text-[10px] text-green-500 border-green-500/50">
                           <CheckCircle2 className="h-3 w-3 me-0.5" /> OK
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">{t(`guide.phases.${phase.id}.description`)}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{isRTL ? phase.descriptionAr || phase.description : phase.description}</p>
                   </div>
                   <div className={cn('flex items-center gap-2 shrink-0', isRTL && 'flex-row-reverse')}>
                     <Badge variant="secondary" className="text-[10px]">{phaseDone}/{phaseTotal}</Badge>
-                    <a
-                      href={phase.pdfHref}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="p-1.5 rounded-md hover:bg-accent transition-colors"
-                      title={t('guide.viewGuide')}
-                    >
-                      <BookOpen className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                    </a>
+                    {phase.pdfHref && (
+                      <a
+                        href={phase.pdfHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="p-1.5 rounded-md hover:bg-accent transition-colors"
+                        title={t('guide.viewGuide')}
+                      >
+                        <BookOpen className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                      </a>
+                    )}
                     {isExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
                   </div>
                 </button>
@@ -234,13 +169,12 @@ export function DeploymentGuide() {
                   <CardContent className="pt-0 pb-4">
                     <Separator className="mb-3" />
                     <div className="space-y-1">
-                      {phase.stepKeys.map((stepKey, stepIdx) => {
-                        const fullKey = `guide.phases.${phase.id}.steps.${stepKey}`;
-                        const isChecked = !!checked[stepKey];
+                      {phase.steps.map((step, stepIdx) => {
+                        const isChecked = !!checked[step.id];
                         return (
                           <button
-                            key={stepKey}
-                            onClick={() => toggleStep(stepKey)}
+                            key={step.id}
+                            onClick={() => toggleStep(step.id)}
                             className={cn(
                               'w-full flex items-center gap-3 p-2.5 rounded-md text-start transition-colors',
                               isChecked ? 'bg-green-500/5 hover:bg-green-500/10' : 'hover:bg-accent/30',
@@ -257,7 +191,7 @@ export function DeploymentGuide() {
                             <div className="flex-1 min-w-0">
                               <p className={cn('text-sm', isChecked && 'text-green-600 dark:text-green-400 line-through opacity-80')}>
                                 <span className={cn('text-muted-foreground/60 text-xs me-2', isRTL && 'ms-2 me-0')}>{stepIdx + 1}.</span>
-                                {t(fullKey)}
+                                {isRTL ? step.titleAr || step.title : step.title}
                               </p>
                             </div>
                           </button>
@@ -268,7 +202,7 @@ export function DeploymentGuide() {
                 )}
               </Card>
 
-              {idx < PHASES.length - 1 && (
+              {idx < phases.length - 1 && (
                 <div className="flex justify-center py-1">
                   <ArrowDown className="h-4 w-4 text-muted-foreground/40" />
                 </div>

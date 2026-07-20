@@ -1,0 +1,46 @@
+http://localhost:8888/reports/rwservlet/showjobs?server=onyx-iax_rprt_POS
+
+D:\oracle\ofm\ofr\asinst1\bin\opmnctl stopproc ias-component=onyx-iax_rprt_pos
+
+D:\oracle\ofm\ofr\asinst1\bin\opmnctl startproc ias-component=onyx-iax_rprt_pos
+################################################################
+طباعة التقارير بحسب اتجاه اللغة 
+D:\oracle\ofm\ofr\asinst1\config\ReportsServerComponent
+rwserver.conf
+
+############################################################
+طباعة الباركود في النقاط 
+###########################################################
+نسخ الملف
+oraclebarcode.jar
+الى المسار
+E:\oracle\ofm\ofr\as1\reports\jlib
+D:\oracle\ofm\ofr\as1\reports\jlib
+******************
+E:\oracle\ofm\ofr\as1\jlib
+D:\oracle\ofm\ofr\as1\jlib
+
+يتم اضافة المسار في ملف ال
+ONYXWPOS.env
+الموجود في المسار 
+E:\oracle\ofm\ofr\user_projects\domains\ultimate\config\fmwconfig\servers\WLS_FORMS\applications\formsapp_11.1.2\config
+D:\oracle\ofm\ofr\user_projects\domains\ultimate\config\fmwconfig\servers\WLS_FORMS\applications\formsapp_11.1.2\config
+في نهاية ال
+CLASSPATH=
+;E:\oracle\ofm\ofr\as1\reports\jlib\oraclebarcode.jar
+;D:\oracle\ofm\ofr\as1\reports\jlib\oraclebarcode.jar
+#####################################################
+الطباعة المباشرة 
+######################################################
+نقل ملف IxPdfViewer الى المسار التالي 
+D:\oracle\ofm\ofr\as1\forms\java
+إضافة هذا المسار 
+archive=NewErpIcon.jar,jicons.jar,frmall.jar,frmwebutil.jar,IxPdfViewer.jar
+في ملف 
+D:\oracle\ofm\ofr\user_projects\domains\ultimate\config\fmwconfig\servers\WLS_FORMS\applications\formsapp_11.1.2\config
+
+في حال كانت نقاط البيع اوفلاين
+انسخ اجراء ال vld واجراء ال syn من السرفر لهذه النقطة
+
+
+

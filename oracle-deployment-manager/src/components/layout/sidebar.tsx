@@ -15,6 +15,7 @@ import {
   Paintbrush,
   Package,
   Layers,
+  ClipboardList,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -31,7 +32,8 @@ export function Sidebar() {
   const navItems = [
     { href: '/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, group: 'main' },
     { href: '/architecture', label: t('nav.architecture'), icon: Layers, group: 'main' },
-    { href: '/sw-deploy', label: t('nav.swDeploy'), icon: Package, group: 'main' },
+    { href: '/sw-deploy', label: isRTL ? 'خطوات بعد التركيب' : 'Post-Install Steps', icon: Package, group: 'main' },
+    { href: '/questionnaire', label: isRTL ? 'استبيان العميل' : 'Questionnaire', icon: ClipboardList, group: 'main' },
     { href: '/deployment', label: t('nav.deployment'), icon: Rocket, group: 'docs' },
     { href: '/templates', label: t('nav.templates'), icon: Copy, group: 'docs' },
     { href: '/branding', label: t('nav.branding'), icon: Paintbrush, group: 'settings' },

@@ -2,7 +2,7 @@
   "app": {
     "name": "مدير نشر أوراكل",
     "shortName": "نشر أوراكل",
-    "description": "منصة احترافية لنشر Oracle Forms & Reports"
+    "description": "متطلبات التركيب الـ Onyx Ix ERP"
   },
   "nav": {
     "dashboard": "لوحة التحكم",

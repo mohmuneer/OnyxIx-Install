@@ -134,3 +134,33 @@ export interface User {
   role: 'admin' | 'operator' | 'viewer';
   createdAt: string;
 }
+
+export interface HwItem {
+  iconType: 'Cpu' | 'MemoryStick' | 'HardDrive' | 'Wifi' | 'Globe' | 'Shield' | 'Download' | 'Server' | 'Database';
+  label: { ar: string; en: string };
+  value: string;
+}
+
+export interface SwItem {
+  label: { ar: string; en: string };
+  value: string;
+}
+
+export interface DashboardSection {
+  id: string;
+  title: { ar: string; en: string };
+  iconType: 'Database' | 'Server' | 'Cpu' | 'MemoryStick' | 'HardDrive' | 'Wifi' | 'Globe' | 'Shield' | 'Download';
+  color: string;
+  hw: HwItem[];
+  sw: SwItem[];
+}
+
+export interface RequirementCategory {
+  category: { ar: string; en: string };
+  items: { ar: string; en: string }[];
+}
+
+export interface DashboardData {
+  sections: DashboardSection[];
+  requirements: RequirementCategory[];
+}

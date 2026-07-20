@@ -1,0 +1,5 @@
+<oneoff_actions>
+    <oracle.developer.forms.runtime version="11.1.2.2.0" opt_req="R">
+        <copy name="vgs.dll" path="%ORACLE_HOME%/bin" file_name="bin/vgs.dll"/>
+    </oracle.developer.forms.runtime>
+</oneoff_actions>

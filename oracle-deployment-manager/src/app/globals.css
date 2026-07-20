@@ -182,9 +182,11 @@
   }
 }
 
-[dir="rtl"] [data-slot="dialog-content"],
-[dir="rtl"] [data-slot="alert-dialog-content"] {
-  transform: translate(50%, -50%) !important;
+/* ============================================================
+   MODAL OPEN - Prevent body scroll
+   ============================================================ */
+body.modal-open {
+  overflow: hidden;
 }
 
 [dir="rtl"] [data-slot="dropdown-menu-content"],

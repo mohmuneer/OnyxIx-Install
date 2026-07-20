@@ -29,33 +29,17 @@ import {
   X,
   BookOpen,
   ExternalLink,
-  Download,
-  Printer,
-  FileText,
   Boxes,
-  Layers,
-  Network,
-  Activity,
   Cpu,
-  HardDrive,
-  Wifi,
-  Shield,
-  Zap,
   ArrowDown,
   ChevronRight,
   Eye,
   EyeOff,
-  Search,
-  Bell,
-  Settings,
-  User,
-  Building2,
-  Cloud,
-  Box,
   CircleDot,
   GitBranch,
   Workflow,
   BarChart3,
+  Pencil,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -76,7 +60,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
+import { ArchitectureDataEditor } from '@/components/architecture/architecture-data-editor';
+import { useArchitectureStore } from '@/stores/architecture-store';
+
 import {
   Tooltip as TooltipUI,
   TooltipContent,
@@ -165,10 +151,16 @@ function StatusDot({ status, size = 'sm' }: { status: 'running' | 'stopped' | 'e
 export function ArchitecturePage() {
   const { t, isRTL } = useLocale();
   const { systemInfo } = useAppStore();
+  const { data: archData, init: initArch } = useArchitectureStore();
   const [selectedTool, setSelectedTool] = useState<ArchitectureTool | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [journeyHighlight, setJourneyHighlight] = useState<HighlightState>({ toolIds: [], tier: null });
   const [showDetailed, setShowDetailed] = useState(true);
+  const [editorOpen, setEditorOpen] = useState(false);
+
+  useEffect(() => {
+    initArch();
+  }, [initArch]);
 
   useEffect(() => {
     if (journeyHighlight.tier || journeyHighlight.toolIds.length > 0) {
@@ -179,9 +171,9 @@ export function ArchitecturePage() {
 
   const toolsByTier = useMemo(() => {
     const grouped: Record<string, ArchitectureTool[]> = { client: [], application: [], database: [] };
-    ARCHITECTURE_TOOLS.forEach((tool) => grouped[tool.tier].push(tool));
+    archData.tools.forEach((tool) => grouped[tool.tier].push(tool));
     return grouped;
-  }, []);
+  }, [archData.tools]);
 
   const getServiceStatus = useCallback((key?: string): 'running' | 'stopped' | 'error' | null => {
     if (!key || !systemInfo) return null;
@@ -200,17 +192,6 @@ export function ArchitecturePage() {
   const isToolHighlighted = (toolId: string, toolTier: string) => {
     return journeyHighlight.toolIds.includes(toolId) || journeyHighlight.tier === toolTier;
   };
-
-  const stats = useMemo(() => [
-    { label: 'Layers', value: 3, icon: Layers, color: 'text-violet-400', bg: 'bg-violet-500/10', border: 'border-violet-500/20' },
-    { label: 'Services', value: ARCHITECTURE_TOOLS.length, icon: Server, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
-    { label: 'DB Tables', value: '247', icon: Database, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
-    { label: 'APIs', value: '18', icon: Network, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-    { label: 'Modules', value: '32', icon: Box, color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
-    { label: 'Server', value: 'Online', icon: Activity, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', status: true },
-    { label: 'Database', value: 'Running', icon: HardDrive, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', status: true },
-    { label: 'License', value: 'Enterprise', icon: Shield, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
-  ], []);
 
   return (
     <AppLayout>
@@ -241,61 +222,10 @@ export function ArchitecturePage() {
                 </p>
               </div>
             </div>
-            <div className={cn('flex items-center gap-2 flex-wrap', isRTL && 'flex-row-reverse')}>
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs" onClick={() => window.print()}>
-                <Printer className="h-3.5 w-3.5" />
-                {isRTL ? 'طباعة' : 'Print'}
-              </Button>
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                <Download className="h-3.5 w-3.5" />
-                {isRTL ? 'تحميل PDF' : 'Download PDF'}
-              </Button>
-              <Button variant="outline" size="sm" className="gap-1.5 text-xs">
-                <FileText className="h-3.5 w-3.5" />
-                {isRTL ? 'الدليل' : 'Guide'}
-              </Button>
-            </div>
-          </motion.div>
-
-          {/* ── Statistics Row ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3"
-          >
-            {stats.map((stat, i) => {
-              const Icon = stat.icon;
-              return (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.05 * i }}
-                  className={cn(
-                    'glass-card rounded-xl p-3 stat-card-hover cursor-default',
-                    stat.border && `border ${stat.border}`
-                  )}
-                >
-                  <div className={cn('flex items-center gap-2 mb-2', isRTL && 'flex-row-reverse')}>
-                    <div className={cn('p-1.5 rounded-lg', stat.bg)}>
-                      <Icon className={cn('h-3.5 w-3.5', stat.color)} />
-                    </div>
-                    <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{stat.label}</span>
-                  </div>
-                  <div className={cn('flex items-center gap-1.5', isRTL && 'flex-row-reverse')}>
-                    {stat.status ? (
-                      <>
-                        <StatusDot status="running" />
-                        <span className={cn('text-xs font-semibold', stat.color)}>{stat.value}</span>
-                      </>
-                    ) : (
-                      <span className="text-lg font-bold tracking-tight">{stat.value}</span>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
+            <Button variant="ghost" size="sm" onClick={() => setEditorOpen(true)} className="gap-1.5 text-xs text-amber-500 hover:text-amber-500 hover:bg-amber-500/10 rounded-xl">
+              <Pencil className="h-3.5 w-3.5" />
+              {isRTL ? 'تعديل' : 'Edit'}
+            </Button>
           </motion.div>
 
           {/* ── Architecture Flow Diagram ── */}
@@ -421,7 +351,7 @@ export function ArchitecturePage() {
                         <ArrowDown className="h-4 w-4 text-amber-500/60 flow-arrow" />
                         <div className="flex items-center gap-2 py-1 px-3 rounded-full bg-white/[0.03] border border-white/5">
                           <span className="text-[10px] font-mono text-muted-foreground">
-                            {CONNECTIONS[tierIdx].protocol} — {CONNECTIONS[tierIdx].port}
+                             {archData.connections[tierIdx]?.protocol} — {archData.connections[tierIdx]?.port}
                           </span>
                         </div>
                         <ArrowDown className="h-4 w-4 text-amber-500/60 flow-arrow" />
@@ -560,7 +490,7 @@ export function ArchitecturePage() {
                     <GitBranch className="h-4 w-4 text-amber-500" />
                     <span className="text-sm font-semibold">{isRTL ? 'رحلة الطلب' : 'Request Journey'}</span>
                   </div>
-                  <Badge variant="outline" className="text-[10px]">{JOURNEY_STEPS.length} {isRTL ? 'خطوات' : 'steps'}</Badge>
+                  <Badge variant="outline" className="text-[10px]">{archData.journey.length} {isRTL ? 'خطوات' : 'steps'}</Badge>
                 </div>
                 <div className="relative">
                   <div className={cn(
@@ -568,7 +498,7 @@ export function ArchitecturePage() {
                     isRTL ? 'right-4' : 'left-4'
                   )} />
                   <div className="space-y-1">
-                    {JOURNEY_STEPS.map((step) => {
+                    {archData.journey.map((step) => {
                       const isActive = journeyHighlight.toolIds.length > 0 &&
                         step.highlightToolIds.some((id) => journeyHighlight.toolIds.includes(id));
 
@@ -622,10 +552,10 @@ export function ArchitecturePage() {
                     <BookOpen className="h-4 w-4 text-amber-500" />
                     <span className="text-sm font-semibold">{isRTL ? 'دليل التثبيت' : 'Installation Guides'}</span>
                   </div>
-                  <Badge variant="outline" className="text-[10px]">{ARCHITECTURE_GUIDES.length} {isRTL ? 'أدلة' : 'guides'}</Badge>
+                  <Badge variant="outline" className="text-[10px]">{archData.guides.length} {isRTL ? 'أدلة' : 'guides'}</Badge>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {ARCHITECTURE_GUIDES.map((guide, i) => (
+                  {archData.guides.map((guide, i) => (
                     guide.href ? (
                       <motion.a
                         key={guide.id}
@@ -698,6 +628,9 @@ export function ArchitecturePage() {
           </>
         )}
       </AnimatePresence>
+
+      {/* Editor Dialog */}
+      <ArchitectureDataEditor open={editorOpen} onClose={() => setEditorOpen(false)} />
     </AppLayout>
   );
 }

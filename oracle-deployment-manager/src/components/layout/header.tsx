@@ -33,10 +33,7 @@ export function Header() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <header className={cn(
-      'h-16 border-b border-white/[0.06] bg-[#0F1520]/80 backdrop-blur-xl flex items-center justify-between px-4 md:px-6 shrink-0 sticky top-0 z-30',
-      isRTL && 'flex-row-reverse'
-    )}>
+    <header className="h-16 border-b border-white/[0.06] bg-[#0F1520]/80 backdrop-blur-xl flex items-center justify-between px-4 md:px-6 shrink-0 sticky top-0 z-30">
       <div className="flex items-center gap-3">
         {/* Mobile hamburger */}
         <Button

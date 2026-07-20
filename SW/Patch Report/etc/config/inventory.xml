@@ -1,0 +1,32 @@
+<oneoff_inventory>
+    <opack_version version="11.1.0.4.0"/>
+    <patch_id number="17301874"/>
+    <unique_patch_id>17504462</unique_patch_id>
+    <minimum_opatch_version>11.1.0.8.3</minimum_opatch_version>
+    <date_of_patch year="2014" month="Apr" day="1" time="22:47:46 hrs" zone="PST8PDT"/>
+    <base_bugs>
+        <bug number="17301874" description="THERE SEEMS TO BE AN INFINITE LOOP IN VGS.DLL"/>
+    </base_bugs>
+    <required_components>
+        <component internal_name="oracle.developer.forms.runtime" version="11.1.2.2.0" opt_req="R"/>
+    </required_components>
+    <os_platforms>
+        <platform name="Microsoft Windows x64 (64-bit)" id="233"/>
+    </os_platforms>
+    <executables></executables>
+    <instance_shutdown>true</instance_shutdown>
+    <instance_shutdown_message></instance_shutdown_message>
+    <online_rac_installable>false</online_rac_installable>
+    <run_as_root>false</run_as_root>
+    <sql_migrate>false</sql_migrate>
+    <wls_prereq_oneoffs></wls_prereq_oneoffs>
+    <prereq_oneoffs></prereq_oneoffs>
+    <coreq_oneoffs></coreq_oneoffs>
+    <overlay_oneoffs></overlay_oneoffs>
+    <patch_type value="singleton"/>
+    <product_family value="fmw"/>
+    <auto>false</auto>
+    <applicable_product value=""/>
+    <products></products>
+    <update_components></update_components>
+</oneoff_inventory>
