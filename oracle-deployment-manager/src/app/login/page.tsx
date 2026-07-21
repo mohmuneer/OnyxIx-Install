@@ -132,7 +132,7 @@ export default function LoginPage() {
         </div>
 
         <div className="w-full max-w-md animate-fadeUp" style={{ animationDelay: '0.1s' }}>
-          <div className={cn('flex lg:hidden items-center gap-3 mb-8', isRTL && 'flex-row-reverse')}>
+          <div className={cn('flex lg:hidden items-center gap-3 mb-8', isRTL ? 'flex-row-reverse justify-end' : 'justify-start')}>
             {config.logo?.logoUrl ? (
               <img src={config.logo.logoUrl} alt="Logo" className="w-10 h-10 rounded-xl object-contain shadow-lg" />
             ) : (
@@ -140,7 +140,7 @@ export default function LoginPage() {
                 <Database className="h-5 w-5 text-white" />
               </div>
             )}
-            <div>
+            <div className={isRTL ? 'text-end' : ''}>
               <h1 className="font-bold text-white">{config.logo?.systemName || 'Onyx IX'}</h1>
               <p className="text-[10px] text-slate-500">{config.logo?.companyName || 'Ultimate Solutions'}</p>
             </div>
@@ -158,19 +158,20 @@ export default function LoginPage() {
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-xs font-medium text-slate-400">
+                <Label className={cn('text-xs font-medium text-slate-400', isRTL && 'text-end block')}>
                   {isRTL ? 'اسم المستخدم أو البريد' : 'Username or Email'}
                 </Label>
                 <Input
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder={isRTL ? 'أدخل اسم المستخدم أو البريد' : 'Enter username or email'}
-                  className="h-11 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-slate-600 focus:border-[#18B13A]/40 focus:ring-[#18B13A]/20 rounded-xl"
+                  className={cn('h-11 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-slate-600 focus:border-[#18B13A]/40 focus:ring-[#18B13A]/20 rounded-xl', isRTL && 'text-end')}
+                  dir={isRTL ? 'rtl' : 'ltr'}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs font-medium text-slate-400">
+                <Label className={cn('text-xs font-medium text-slate-400', isRTL && 'text-end block')}>
                   {isRTL ? 'كلمة المرور' : 'Password'}
                 </Label>
                 <div className="relative">
@@ -179,7 +180,8 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={isRTL ? 'أدخل كلمة المرور' : 'Enter password'}
-                    className="h-11 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-slate-600 focus:border-[#18B13A]/40 focus:ring-[#18B13A]/20 rounded-xl pe-11"
+                    className={cn('h-11 bg-white/[0.04] border-white/[0.08] text-white placeholder:text-slate-600 focus:border-[#18B13A]/40 focus:ring-[#18B13A]/20 rounded-xl pe-11', isRTL && 'text-end')}
+                    dir={isRTL ? 'rtl' : 'ltr'}
                   />
                   <button
                     type="button"
@@ -211,7 +213,7 @@ export default function LoginPage() {
               </Button>
             </form>
 
-            <div className="mt-6 pt-6 border-t border-white/[0.06] text-center">
+            <div className={cn('mt-6 pt-6 border-t border-white/[0.06] text-center', isRTL && 'text-end')}>
               <p className="text-sm text-slate-500">
                 {isRTL ? 'ليس لديك حساب؟' : "Don't have an account?"}{' '}
                 <Link href="/register" className="text-[#18B13A] hover:text-[#4ADE80] font-medium transition-colors">
