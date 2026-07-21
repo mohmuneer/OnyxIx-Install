@@ -178,6 +178,19 @@
   }
 }
 
+/* RTL form elements */
+[dir="rtl"] input:not([type="color"]):not([type="checkbox"]):not([type="radio"]),
+[dir="rtl"] textarea,
+[dir="rtl"] select,
+[dir="rtl"] [data-slot="input"] {
+  text-align: end !important;
+}
+
+/* RTL form labels */
+[dir="rtl"] label {
+  text-align: end !important;
+}
+
 /* Auto-mirror directional icons in RTL */
 .direction-rtl { direction: rtl; }
 

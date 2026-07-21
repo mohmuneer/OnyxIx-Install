@@ -178,7 +178,7 @@ export function BrandingSettings() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {COLOR_FIELDS.map(({ key, label, labelAr }) => (
                 <div key={key} className="space-y-2">
-                  <Label className="text-xs text-slate-400">{isRTL ? labelAr : label}</Label>
+                  <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{isRTL ? labelAr : label}</Label>
                   <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
                     <input
                       type="color"
@@ -187,6 +187,7 @@ export function BrandingSettings() {
                       className="w-9 h-9 rounded-lg border border-white/10 cursor-pointer bg-transparent shrink-0"
                     />
                     <Input
+                      dir={isRTL ? 'rtl' : 'ltr'}
                       value={local.colors[key]}
                       onChange={(e) => {
                         const val = e.target.value;
@@ -197,7 +198,7 @@ export function BrandingSettings() {
                           updateLocal(`colors.${key}`, local.colors[key]);
                         }
                       }}
-                      className="h-9 text-xs font-mono bg-white/[0.04] border-white/[0.08] text-white"
+                      className={cn('h-9 text-xs font-mono bg-white/[0.04] border-white/[0.08] text-white', isRTL && 'text-end')}
                     />
                   </div>
                 </div>
@@ -217,11 +218,12 @@ export function BrandingSettings() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label className="text-xs text-slate-400">{t('branding.fontFamily')}</Label>
+                <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{t('branding.fontFamily')}</Label>
                 <select
+                  dir={isRTL ? 'rtl' : 'ltr'}
                   value={local.font.family}
                   onChange={(e) => updateLocal('font.family', e.target.value)}
-                  className="flex h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-sm text-white"
+                  className={cn('flex h-9 w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-sm text-white', isRTL && 'text-end')}
                 >
                   {FONT_PRESETS.map((f) => (
                     <option key={f.value} value={f.value}>{f.label}</option>
@@ -229,19 +231,21 @@ export function BrandingSettings() {
                 </select>
               </div>
               <div className="space-y-2">
-                <Label className="text-xs text-slate-400">{t('branding.fontSize')}</Label>
+                <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{t('branding.fontSize')}</Label>
                 <Input
+                  dir={isRTL ? 'rtl' : 'ltr'}
                   value={local.font.size}
                   onChange={(e) => updateLocal('font.size', e.target.value)}
-                  className="h-9 bg-white/[0.04] border-white/[0.08] text-white"
+                  className={cn('h-9 bg-white/[0.04] border-white/[0.08] text-white', isRTL && 'text-end')}
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs text-slate-400">{t('branding.borderRadius')}</Label>
+                <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{t('branding.borderRadius')}</Label>
                 <Input
+                  dir={isRTL ? 'rtl' : 'ltr'}
                   value={local.font.borderRadius}
                   onChange={(e) => updateLocal('font.borderRadius', e.target.value)}
-                  className="h-9 bg-white/[0.04] border-white/[0.08] text-white"
+                  className={cn('h-9 bg-white/[0.04] border-white/[0.08] text-white', isRTL && 'text-end')}
                 />
               </div>
             </div>
@@ -259,44 +263,48 @@ export function BrandingSettings() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-xs text-slate-400">{isRTL ? 'اسم النظام' : 'System Name'}</Label>
+                <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{isRTL ? 'اسم النظام' : 'System Name'}</Label>
                 <Input
+                  dir={isRTL ? 'rtl' : 'ltr'}
                   value={local.logo.systemName}
                   onChange={(e) => updateLocal('logo.systemName', e.target.value)}
-                  className="h-9 bg-white/[0.04] border-white/[0.08] text-white"
+                  className={cn('h-9 bg-white/[0.04] border-white/[0.08] text-white', isRTL && 'text-end')}
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs text-slate-400">{isRTL ? 'اسم الشركة' : 'Company Name'}</Label>
+                <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{isRTL ? 'اسم الشركة' : 'Company Name'}</Label>
                 <Input
+                  dir={isRTL ? 'rtl' : 'ltr'}
                   value={local.logo.companyName}
                   onChange={(e) => updateLocal('logo.companyName', e.target.value)}
-                  className="h-9 bg-white/[0.04] border-white/[0.08] text-white"
+                  className={cn('h-9 bg-white/[0.04] border-white/[0.08] text-white', isRTL && 'text-end')}
                 />
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-xs text-slate-400">{t('branding.loginTitle')}</Label>
+                <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{t('branding.loginTitle')}</Label>
                 <Input
+                  dir={isRTL ? 'rtl' : 'ltr'}
                   value={local.login.title}
                   onChange={(e) => updateLocal('login.title', e.target.value)}
-                  className="h-9 bg-white/[0.04] border-white/[0.08] text-white"
+                  className={cn('h-9 bg-white/[0.04] border-white/[0.08] text-white', isRTL && 'text-end')}
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs text-slate-400">{t('branding.loginSubtitle')}</Label>
+                <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{t('branding.loginSubtitle')}</Label>
                 <Input
+                  dir={isRTL ? 'rtl' : 'ltr'}
                   value={local.login.subtitle}
                   onChange={(e) => updateLocal('login.subtitle', e.target.value)}
-                  className="h-9 bg-white/[0.04] border-white/[0.08] text-white"
+                  className={cn('h-9 bg-white/[0.04] border-white/[0.08] text-white', isRTL && 'text-end')}
                 />
               </div>
             </div>
 
             {/* Logo Upload */}
             <div className="space-y-2">
-              <Label className="text-xs text-slate-400">{t('branding.mainLogo')}</Label>
+              <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{t('branding.mainLogo')}</Label>
               <div className={cn('flex items-center gap-3', isRTL && 'flex-row-reverse')}>
                 <input
                   ref={fileInputRef}

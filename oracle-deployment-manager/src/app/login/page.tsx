@@ -13,16 +13,21 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
 function Particles() {
-  const particles = useMemo(() =>
-    Array.from({ length: 20 }, (_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      size: Math.random() * 3 + 1,
-      duration: Math.random() * 20 + 15,
-      delay: Math.random() * 10,
-      opacity: Math.random() * 0.3 + 0.05,
-    })), []);
+  const [particles, setParticles] = useState<Array<{ id: number; left: number; top: number; size: number; duration: number; delay: number; opacity: number }>>([]);
+
+  useEffect(() => {
+    setParticles(
+      Array.from({ length: 20 }, (_, i) => ({
+        id: i,
+        left: Math.random() * 100,
+        top: Math.random() * 100,
+        size: Math.random() * 3 + 1,
+        duration: Math.random() * 20 + 15,
+        delay: Math.random() * 10,
+        opacity: Math.random() * 0.3 + 0.05,
+      }))
+    );
+  }, []);
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">

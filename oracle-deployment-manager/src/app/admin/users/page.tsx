@@ -480,16 +480,16 @@ export default function AdminUsersPage() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label className="text-xs text-slate-400">{isRTL ? 'اسم المستخدم' : 'Username'}</Label>
-              <Input value={editForm.username} onChange={(e) => setEditForm({ ...editForm, username: e.target.value })} className="h-10 bg-white/[0.04] border-white/[0.08] text-white rounded-xl" />
+              <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{isRTL ? 'اسم المستخدم' : 'Username'}</Label>
+              <Input dir={isRTL ? 'rtl' : 'ltr'} value={editForm.username} onChange={(e) => setEditForm({ ...editForm, username: e.target.value })} className={cn('h-10 bg-white/[0.04] border-white/[0.08] text-white rounded-xl', isRTL && 'text-end')} />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-slate-400">{isRTL ? 'البريد الإلكتروني' : 'Email'}</Label>
-              <Input type="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className="h-10 bg-white/[0.04] border-white/[0.08] text-white rounded-xl" />
+              <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{isRTL ? 'البريد الإلكتروني' : 'Email'}</Label>
+              <Input dir={isRTL ? 'rtl' : 'ltr'} type="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} className={cn('h-10 bg-white/[0.04] border-white/[0.08] text-white rounded-xl', isRTL && 'text-end')} />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs text-slate-400">{isRTL ? 'الدور' : 'Role'}</Label>
-              <select value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value })} className="h-10 w-full bg-white/[0.04] border border-white/[0.08] text-white rounded-xl px-3 text-sm focus:outline-none focus:border-[#18B13A]/40">
+              <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{isRTL ? 'الدور' : 'Role'}</Label>
+              <select dir={isRTL ? 'rtl' : 'ltr'} value={editForm.role} onChange={(e) => setEditForm({ ...editForm, role: e.target.value })} className={cn('h-10 w-full bg-white/[0.04] border border-white/[0.08] text-white rounded-xl px-3 text-sm focus:outline-none focus:border-[#18B13A]/40', isRTL && 'text-end')}>
                 <option value="user" className="bg-[#1a1f2e]">{isRTL ? 'مستخدم' : 'User'}</option>
                 <option value="admin" className="bg-[#1a1f2e]">{isRTL ? 'مدير' : 'Admin'}</option>
               </select>
@@ -511,10 +511,10 @@ export default function AdminUsersPage() {
             <DialogTitle className="text-white">{isRTL ? 'تغيير كلمة المرور' : 'Change Password'}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <p className="text-xs text-slate-500">{isRTL ? `المستخدم: ${pwUser?.username}` : `User: ${pwUser?.username}`}</p>
+            <p className={cn('text-xs text-slate-500', isRTL && 'text-end')}>{isRTL ? `المستخدم: ${pwUser?.username}` : `User: ${pwUser?.username}`}</p>
             <div className="space-y-2">
-              <Label className="text-xs text-slate-400">{isRTL ? 'كلمة المرور الجديدة' : 'New Password'}</Label>
-              <Input type="password" value={newPassword} onChange={(e) => { setNewPassword(e.target.value); setPwError(''); setPwSuccess(''); }} placeholder={isRTL ? 'أدخل كلمة المرور الجديدة' : 'Enter new password'} className="h-10 bg-white/[0.04] border-white/[0.08] text-white rounded-xl" />
+              <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{isRTL ? 'كلمة المرور الجديدة' : 'New Password'}</Label>
+              <Input dir={isRTL ? 'rtl' : 'ltr'} type="password" value={newPassword} onChange={(e) => { setNewPassword(e.target.value); setPwError(''); setPwSuccess(''); }} placeholder={isRTL ? 'أدخل كلمة المرور الجديدة' : 'Enter new password'} className={cn('h-10 bg-white/[0.04] border-white/[0.08] text-white rounded-xl', isRTL && 'text-end')} />
             </div>
             {pwError && <p className="text-xs text-red-400">{pwError}</p>}
             {pwSuccess && <p className="text-xs text-[#18B13A]">{pwSuccess}</p>}
