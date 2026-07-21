@@ -244,7 +244,10 @@ export const useBrandingStore = create<BrandingState>((set, get) => ({
     const { config } = get();
     applyCSSVariables(config.colors, config.font);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('app-branding', JSON.stringify(config));
+      const toStore = config.logo?.logoUrl
+        ? config
+        : { ...config, logo: { ...config.logo, logoUrl: DEFAULT_CONFIG.logo.logoUrl } };
+      localStorage.setItem('app-branding', JSON.stringify(toStore));
     }
   },
 
@@ -260,8 +263,8 @@ export const useBrandingStore = create<BrandingState>((set, get) => ({
         const data = await res.json();
         const current = get().config;
         const merged = { ...DEFAULT_CONFIG, ...data };
-        if (!merged.logo.logoUrl && current.logo.logoUrl) {
-          merged.logo.logoUrl = current.logo.logoUrl;
+        if (!merged.logo.logoUrl) {
+          merged.logo.logoUrl = current.logo.logoUrl || DEFAULT_CONFIG.logo.logoUrl;
         }
         if (!merged.logo.systemName || merged.logo.systemName === 'Onyx IX') {
           merged.logo.systemName = current.logo.systemName;
@@ -364,7 +367,7 @@ function migrateOldBranding(raw: any): BrandingConfig | null {
       logo: {
         companyName: raw.companyName || 'Ultimate Solutions',
         systemName: raw.systemName || 'Onyx IX',
-        logoUrl: raw.logoUrl || null,
+        logoUrl: raw.logoUrl || '/images/logo.png',
       },
       login: {
         title: raw.loginTitle || 'Onyx IX',
@@ -386,6 +389,9 @@ export function loadBrandingFromStorage(): BrandingConfig | null {
     const parsed = JSON.parse(stored);
     const migrated = migrateOldBranding(parsed);
     if (migrated) {
+      if (!migrated.logo?.logoUrl) {
+        migrated.logo = { ...migrated.logo, logoUrl: DEFAULT_CONFIG.logo.logoUrl };
+      }
       localStorage.setItem('app-branding', JSON.stringify(migrated));
     }
     return migrated;
