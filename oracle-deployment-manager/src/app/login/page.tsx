@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Database, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Database, Eye, EyeOff, ArrowLeft, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -49,6 +49,14 @@ function Particles() {
     </div>
   );
 }
+
+const RTL_INPUT_STYLE: React.CSSProperties = {
+  fontFamily: "'Cairo', 'IBM Plex Sans Arabic', system-ui, sans-serif",
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(255,255,255,0.08)',
+  fontWeight: 600,
+  unicodeBidi: 'plaintext',
+};
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -155,7 +163,7 @@ export default function LoginPage() {
               </div>
             )}
           </div>
-          <div className="text-center">
+          <div className="text-end">
             <h1 className="text-2xl sm:text-3xl font-bold text-white" style={{ fontFamily: "'Cairo', 'IBM Plex Sans Arabic', system-ui, sans-serif", fontWeight: 800 }}>
               {config.logo?.systemName || 'Onyx IX'}
             </h1>
@@ -191,7 +199,7 @@ export default function LoginPage() {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleLogin} className="space-y-5">
+            <form onSubmit={handleLogin} className="space-y-5" dir="rtl">
               {/* Username */}
               <div className="space-y-2">
                 <Label
@@ -201,19 +209,15 @@ export default function LoginPage() {
                   {isRTL ? 'اسم المستخدم أو البريد' : 'Username or Email'}
                 </Label>
                 <div className="relative">
+                  <User className="absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500 pointer-events-none" />
                   <Input
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder={isRTL ? 'أدخل اسم المستخدم أو البريد' : 'Enter username or email'}
                     dir="rtl"
                     autoComplete="username"
-                    className="h-14 text-end pe-11 rounded-2xl text-white placeholder:text-slate-600 transition-all duration-200"
-                    style={{
-                      fontFamily: "'Cairo', 'IBM Plex Sans Arabic', system-ui, sans-serif",
-                      background: 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      fontWeight: 600,
-                    }}
+                    className="h-14 text-end pe-11 ps-4 rounded-2xl text-white placeholder:text-slate-600 transition-all duration-200"
+                    style={RTL_INPUT_STYLE}
                     onFocus={(e) => {
                       e.currentTarget.style.borderColor = 'rgba(37,99,235,0.5)';
                       e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.15)';
@@ -242,13 +246,8 @@ export default function LoginPage() {
                     placeholder={isRTL ? 'أدخل كلمة المرور' : 'Enter password'}
                     dir="rtl"
                     autoComplete="current-password"
-                    className="h-14 text-end ps-11 rounded-2xl text-white placeholder:text-slate-600 transition-all duration-200"
-                    style={{
-                      fontFamily: "'Cairo', 'IBM Plex Sans Arabic', system-ui, sans-serif",
-                      background: 'rgba(255,255,255,0.04)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      fontWeight: 600,
-                    }}
+                    className="h-14 text-end pe-11 ps-4 rounded-2xl text-white placeholder:text-slate-600 transition-all duration-200"
+                    style={RTL_INPUT_STYLE}
                     onFocus={(e) => {
                       e.currentTarget.style.borderColor = 'rgba(37,99,235,0.5)';
                       e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.15)';
@@ -261,7 +260,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors p-1"
+                    className="absolute end-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors p-1"
                     aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
                   >
                     {showPassword ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
@@ -271,7 +270,14 @@ export default function LoginPage() {
 
               {/* Error */}
               {error && (
-                <div className="text-center py-2 px-4 rounded-xl text-sm text-red-400" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.15)' }}>
+                <div
+                  className="text-end py-2 px-4 rounded-xl text-sm text-red-400"
+                  style={{
+                    background: 'rgba(239,68,68,0.1)',
+                    border: '1px solid rgba(239,68,68,0.15)',
+                    fontFamily: "'Cairo', 'IBM Plex Sans Arabic', system-ui, sans-serif",
+                  }}
+                >
                   {error}
                 </div>
               )}
@@ -291,7 +297,7 @@ export default function LoginPage() {
                 {loading ? (
                   <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
                 ) : (
-                  <span className="flex items-center justify-center gap-2">
+                  <span className={cn('flex items-center justify-center gap-2', isRTL && 'flex-row-reverse')}>
                     {isRTL ? 'دخول' : 'Sign In'}
                     <ArrowLeft className="h-4 w-4" />
                   </span>
@@ -300,7 +306,7 @@ export default function LoginPage() {
             </form>
 
             {/* Footer */}
-            <div className="mt-8 pt-6 text-center" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+            <div className="mt-8 pt-6 text-end" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
               <p className="text-sm text-slate-500" style={{ fontFamily: "'Cairo', 'IBM Plex Sans Arabic', system-ui, sans-serif", fontWeight: 600 }}>
                 {isRTL ? 'ليس لديك حساب؟' : "Don't have an account?"}{' '}
                 <Link

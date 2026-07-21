@@ -184,11 +184,14 @@
 [dir="rtl"] select,
 [dir="rtl"] [data-slot="input"] {
   text-align: end !important;
+  unicode-bidi: plaintext;
+  direction: rtl;
 }
 
 /* RTL form labels */
 [dir="rtl"] label {
   text-align: end !important;
+  unicode-bidi: plaintext;
 }
 
 /* Auto-mirror directional icons in RTL */
