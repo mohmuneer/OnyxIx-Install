@@ -4,12 +4,16 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore, loadAuthFromStorage } from '@/stores/auth-store';
 
+const PUBLIC_PATHS = ['/login', '/register'];
+
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const [initialized, setInitialized] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const login = useAuthStore((s) => s.login);
+
+  const isPublic = PUBLIC_PATHS.includes(pathname);
 
   useEffect(() => {
     const stored = loadAuthFromStorage();
@@ -20,13 +24,17 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [login]);
 
   useEffect(() => {
-    if (!initialized) return;
+    if (!initialized || isPublic) return;
     const stored = loadAuthFromStorage();
-    if (!stored.role && pathname !== '/login' && pathname !== '/register') {
+    if (!stored.role) {
       setRedirecting(true);
       router.replace('/login');
     }
-  }, [initialized, pathname, router]);
+  }, [initialized, isPublic, pathname, router]);
+
+  if (isPublic) {
+    return <>{children}</>;
+  }
 
   if (redirecting) {
     return (

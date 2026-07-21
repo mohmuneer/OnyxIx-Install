@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Database, Eye, EyeOff, ArrowRight, Shield, Server, Globe, UserCog, User as UserIcon } from 'lucide-react';
+import { Database, Eye, EyeOff, ArrowRight, Shield, Server, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -31,8 +30,6 @@ export default function LoginPage() {
       router.replace('/dashboard');
     }
   }, [login, router]);
-
-
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,7 +76,7 @@ export default function LoginPage() {
   ];
 
   return (
-    <div className="min-h-screen us-login-bg flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen us-login-bg flex items-center justify-center p-4 relative overflow-hidden animate-fadeIn">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#18B13A]/[0.03] blur-[100px]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full bg-[#3A3A96]/[0.05] blur-[80px]" />
@@ -87,12 +84,7 @@ export default function LoginPage() {
       </div>
 
       <div className={cn('w-full max-w-5xl flex items-center gap-12 relative z-10', isRTL && 'flex-row-reverse')}>
-        <motion.div
-          initial={{ opacity: 0, x: isRTL ? 40 : -40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-          className="hidden lg:flex flex-col flex-1 gap-10"
-        >
+        <div className={cn('hidden lg:flex flex-col flex-1 gap-10 animate-slideIn', isRTL && 'slide-rtl')}>
           <div className={cn('space-y-4', isRTL && 'text-end')}>
             <div className={cn('flex items-center gap-3', isRTL && 'flex-row-reverse')}>
               {config.logo?.logoUrl ? (
@@ -122,12 +114,10 @@ export default function LoginPage() {
 
           <div className="space-y-3">
             {features.map((f, i) => (
-              <motion.div
+              <div
                 key={f.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
-                className={cn('flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm', isRTL && 'flex-row-reverse')}
+                className={cn('flex items-center gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm animate-fadeUp', isRTL && 'flex-row-reverse')}
+                style={{ animationDelay: `${0.3 + i * 0.1}s` }}
               >
                 <div className="w-10 h-10 rounded-xl bg-[#18B13A]/10 flex items-center justify-center shrink-0">
                   <f.icon className="h-5 w-5 text-[#18B13A]" />
@@ -136,17 +126,12 @@ export default function LoginPage() {
                   <p className="text-sm font-semibold text-white">{f.title}</p>
                   <p className="text-xs text-slate-500 truncate">{f.desc}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: [0.4, 0, 0.2, 1] }}
-          className="w-full max-w-md"
-        >
+        <div className="w-full max-w-md animate-fadeUp" style={{ animationDelay: '0.1s' }}>
           <div className={cn('flex lg:hidden items-center gap-3 mb-8', isRTL && 'flex-row-reverse')}>
             {config.logo?.logoUrl ? (
               <img src={config.logo.logoUrl} alt="Logo" className="w-10 h-10 rounded-xl object-contain shadow-lg" />
@@ -235,7 +220,7 @@ export default function LoginPage() {
               </p>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
