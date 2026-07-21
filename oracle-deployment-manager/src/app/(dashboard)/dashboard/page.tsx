@@ -63,6 +63,7 @@ export default function DashboardPage() {
   }, [data, isRTL]);
 
   return (
+    <>
     <div className="us-page-bg min-h-screen">
       <div className="space-y-6 max-w-[1400px] mx-auto">
 
@@ -145,5 +146,6 @@ export default function DashboardPage() {
     <CanEdit>
       <DashboardDataEditor open={editorOpen} onClose={() => setEditorOpen(false)} />
     </CanEdit>
+    </>
   );
 }
