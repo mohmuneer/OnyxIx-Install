@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Arabic, Inter, IBM_Plex_Mono } from "next/font/google";
+import { IBM_Plex_Sans_Arabic, Inter, IBM_Plex_Mono, Cairo } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
 import { Providers } from "@/components/layout/providers";
@@ -20,6 +20,12 @@ const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
   weight: ["400", "500"],
+});
+
+const cairo = Cairo({
+  variable: "--font-cairo",
+  subsets: ["arabic", "latin"],
+  weight: ["600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -44,11 +50,11 @@ export default async function RootLayout({
     <html
       lang={locale}
       dir={dir}
-      className={`${ibmPlexSansArabic.variable} ${inter.variable} ${ibmPlexMono.variable} h-full antialiased`}
+      className={`${cairo.variable} ${ibmPlexSansArabic.variable} ${inter.variable} ${ibmPlexMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
-        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' http://localhost:* ws://localhost:*;" />
+        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' data: fonts.gstatic.com; connect-src 'self' http://localhost:* ws://localhost:*;" />
         <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `
           :root {
             --us-green: #18B13A;
