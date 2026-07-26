@@ -259,6 +259,7 @@ function CategorySection({
         <div className="px-2 pb-2 space-y-1.5">
           {filteredItems.map((step) => (
             <div key={step.id} className="space-y-1">
+              <p className="text-xs font-semibold text-muted-foreground px-1 pt-2 pb-0.5">{step.titleAr}</p>
               {step.files.length > 0 && (
                 <AnimatePresence mode="popLayout">
                   {step.files.map((file) => (
