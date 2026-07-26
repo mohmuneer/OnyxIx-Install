@@ -123,7 +123,8 @@ function StepFileRow({
       </div>
       <ExternalLink className="h-3.5 w-3.5 text-muted-foreground/20 group-hover:text-amber-500 shrink-0 mt-0.5 transition-colors" />
 
-      {/* Inline action buttons - always visible */}
+      {/* Inline action buttons - admin only */}
+      <CanEdit>
       <div className="absolute top-2 start-2 flex items-center gap-1 z-10">
         {uploadingId === file.id ? (
           <Badge variant="secondary" className="text-[9px] animate-pulse h-5">
@@ -155,6 +156,7 @@ function StepFileRow({
           <Trash2 className="h-3 w-3" />
         </button>
       </div>
+      </CanEdit>
     </motion.a>
   );
 }
@@ -276,7 +278,8 @@ function CategorySection({
                 </AnimatePresence>
               )}
 
-              {/* Upload new file to this step */}
+              {/* Upload new file to this step - admin only */}
+              <CanEdit>
               <div className="ps-12">
                 <label className="inline-flex items-center gap-1.5 text-[10px] text-amber-500/70 hover:text-amber-500 cursor-pointer transition-colors">
                   <Upload className="h-3 w-3" />
@@ -293,6 +296,7 @@ function CategorySection({
                   />
                 </label>
               </div>
+              </CanEdit>
             </div>
           ))}
         </div>
