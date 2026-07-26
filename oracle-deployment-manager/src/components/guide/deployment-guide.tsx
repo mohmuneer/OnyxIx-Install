@@ -137,14 +137,20 @@ export function DeploymentGuide() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
-                      <h3 className="text-sm font-semibold">{isRTL ? phase.titleAr || phase.title : phase.title}</h3>
+                      <h3 className="text-sm font-semibold">{phase.titleAr}</h3>
                       {phaseComplete && (
                         <Badge variant="outline" className="text-[10px] text-green-500 border-green-500/50">
                           <CheckCircle2 className="h-3 w-3 me-0.5" /> OK
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">{isRTL ? phase.descriptionAr || phase.description : phase.description}</p>
+                    {phase.title && phase.title !== phase.titleAr && (
+                      <p className="text-xs text-muted-foreground mt-0.5">{phase.title}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-0.5">{phase.descriptionAr}</p>
+                    {phase.description && phase.description !== phase.descriptionAr && (
+                      <p className="text-xs text-muted-foreground/60 mt-0.5">{phase.description}</p>
+                    )}
                   </div>
                   <div className={cn('flex items-center gap-2 shrink-0', isRTL && 'flex-row-reverse')}>
                     <Badge variant="secondary" className="text-[10px]">{phaseDone}/{phaseTotal}</Badge>
@@ -191,8 +197,13 @@ export function DeploymentGuide() {
                             <div className="flex-1 min-w-0">
                               <p className={cn('text-sm', isChecked && 'text-green-600 dark:text-green-400 line-through opacity-80')}>
                                 <span className={cn('text-muted-foreground/60 text-xs me-2', isRTL && 'ms-2 me-0')}>{stepIdx + 1}.</span>
-                                {isRTL ? step.titleAr || step.title : step.title}
+                                {step.titleAr}
                               </p>
+                              {step.title && step.title !== step.titleAr && (
+                                <p className={cn('text-xs text-muted-foreground', isChecked && 'line-through opacity-60')}>
+                                  {step.title}
+                                </p>
+                              )}
                             </div>
                           </button>
                         );
