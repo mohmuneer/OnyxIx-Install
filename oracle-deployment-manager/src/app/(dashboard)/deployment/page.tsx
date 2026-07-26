@@ -5,7 +5,7 @@ import { BookOpen } from 'lucide-react';
 
 export default function DeploymentPage() {
   return (
-    <div dir="rtl" className="us-page-bg min-h-screen space-y-4 text-end">
+    <div dir="rtl" className="us-page-bg min-h-screen max-h-screen overflow-y-auto space-y-4 text-end">
       <div className="flex items-center gap-3">
         <div className="p-2 rounded-xl bg-gradient-to-br from-[#18B13A] to-[#15803D]">
           <BookOpen className="h-5 w-5 text-white" />

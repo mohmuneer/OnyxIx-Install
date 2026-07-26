@@ -123,8 +123,8 @@ function StepFileRow({
       </div>
       <ExternalLink className="h-3.5 w-3.5 text-muted-foreground/20 group-hover:text-amber-500 shrink-0 mt-0.5 transition-colors" />
 
-      {/* Inline action buttons - appear on hover */}
-      <div className="absolute top-2 start-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+      {/* Inline action buttons - always visible */}
+      <div className="absolute top-2 start-2 flex items-center gap-1 z-10">
         {uploadingId === file.id ? (
           <Badge variant="secondary" className="text-[9px] animate-pulse h-5">
             {isRTL ? 'جاري...' : '...'}
