@@ -9,6 +9,9 @@ export interface BrandingColors {
   sidebarActive: string;
   background: string;
   surface: string;
+  header: string;
+  sidebarBg: string;
+  card: string;
 }
 
 export interface BrandingFont {
@@ -62,6 +65,9 @@ export const THEME_PRESETS: ThemePreset[] = [
       sidebarActive: '#15C138',
       background: '#0B0F17',
       surface: '#111827',
+      header: '#0D1321',
+      sidebarBg: '#0D1321',
+      card: '#111827',
     },
   },
   {
@@ -78,6 +84,9 @@ export const THEME_PRESETS: ThemePreset[] = [
       sidebarActive: '#059669',
       background: '#0F172A',
       surface: '#1E293B',
+      header: '#0F172A',
+      sidebarBg: '#0F172A',
+      card: '#1E293B',
     },
   },
   {
@@ -94,6 +103,9 @@ export const THEME_PRESETS: ThemePreset[] = [
       sidebarActive: '#3B82F6',
       background: '#0B1120',
       surface: '#111827',
+      header: '#0D1428',
+      sidebarBg: '#0D1428',
+      card: '#111827',
     },
   },
   {
@@ -110,6 +122,9 @@ export const THEME_PRESETS: ThemePreset[] = [
       sidebarActive: '#047857',
       background: '#0B0F17',
       surface: '#111827',
+      header: '#0D1321',
+      sidebarBg: '#0D1321',
+      card: '#111827',
     },
   },
   {
@@ -126,6 +141,9 @@ export const THEME_PRESETS: ThemePreset[] = [
       sidebarActive: '#15803D',
       background: '#F8FAFC',
       surface: '#FFFFFF',
+      header: '#FFFFFF',
+      sidebarBg: '#FFFFFF',
+      card: '#FFFFFF',
     },
   },
   {
@@ -142,6 +160,9 @@ export const THEME_PRESETS: ThemePreset[] = [
       sidebarActive: '#0369A1',
       background: '#F0F9FF',
       surface: '#FFFFFF',
+      header: '#FFFFFF',
+      sidebarBg: '#FFFFFF',
+      card: '#FFFFFF',
     },
   },
 ];
@@ -165,6 +186,9 @@ const DEFAULT_CONFIG: BrandingConfig = {
     sidebarActive: '#3B82F6',
     background: '#0B1120',
     surface: '#111827',
+    header: '#0D1428',
+    sidebarBg: '#0D1428',
+    card: '#111827',
   },
   font: {
     family: "Inter, 'IBM Plex Sans Arabic', system-ui, sans-serif",
@@ -211,6 +235,9 @@ function applyCSSVariables(colors?: BrandingColors, font?: BrandingFont) {
   root.style.setProperty('--brand-sidebar-active', colors.sidebarActive);
   root.style.setProperty('--brand-background', colors.background);
   root.style.setProperty('--brand-surface', colors.surface);
+  root.style.setProperty('--brand-header', colors.header);
+  root.style.setProperty('--brand-sidebar-bg', colors.sidebarBg);
+  root.style.setProperty('--brand-card', colors.card);
   root.style.setProperty('--brand-radius', font.borderRadius);
   root.style.setProperty('--brand-font', font.family);
   root.style.setProperty('--brand-font-size', font.size);
@@ -223,7 +250,7 @@ function applyCSSVariables(colors?: BrandingColors, font?: BrandingFont) {
   root.style.setProperty('--ring', colors.primary);
   root.style.setProperty('--background', colors.background);
   root.style.setProperty('--foreground', isDark ? '#E2E8F0' : '#0F172A');
-  root.style.setProperty('--card', colors.surface);
+  root.style.setProperty('--card', colors.card);
   root.style.setProperty('--card-foreground', isDark ? '#E2E8F0' : '#0F172A');
   root.style.setProperty('--popover', isDark ? '#1E293B' : '#FFFFFF');
   root.style.setProperty('--popover-foreground', isDark ? '#E2E8F0' : '#0F172A');
@@ -374,6 +401,9 @@ function migrateOldBranding(raw: any): BrandingConfig | null {
         sidebarActive: raw.primaryColor || '#15C138',
         background: raw.backgroundColor || '#0B0F17',
         surface: raw.cardColor || raw.headerColor || '#111827',
+        header: raw.headerColor || '#0D1321',
+        sidebarBg: raw.sidebarBg || '#0D1321',
+        card: raw.cardColor || '#111827',
       },
       font: {
         family: raw.fontFamily || "Inter, 'IBM Plex Sans Arabic', system-ui, sans-serif",

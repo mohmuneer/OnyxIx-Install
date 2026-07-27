@@ -97,13 +97,13 @@ export function Sidebar() {
       <aside
         className={cn(
           'fixed top-0 z-40 h-screen transition-all duration-300 flex flex-col',
-          'dark:bg-[var(--brand-surface)]',
+          'dark:bg-[var(--brand-sidebar-bg)]',
           isRTL ? 'right-0 border-l border-white/[0.06]' : 'left-0 border-r border-white/[0.06]',
           'hidden md:flex',
           isExpanded ? 'w-64' : 'w-[72px]',
           mobileMenuOpen && 'flex !w-64'
         )}
-        style={{ backgroundColor: 'var(--brand-surface, #0F1520)' }}
+        style={{ backgroundColor: 'var(--brand-sidebar-bg, #0F1520)' }}
       >
         {/* Logo / Brand */}
         <div className={cn(

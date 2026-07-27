@@ -60,7 +60,7 @@ export default async function RootLayout({
             --us-green: var(--brand-primary, #18B13A);
             --us-blue: var(--brand-secondary, #3A3A96);
             --us-bg: var(--brand-background, #0B0F17);
-            --us-card: var(--brand-surface, #111827);
+            --us-card: var(--brand-card, #111827);
             --us-success: var(--brand-success, #22C55E);
             --us-warning: var(--brand-warning, #FF9800);
             --us-danger: var(--brand-danger, #EF4444);

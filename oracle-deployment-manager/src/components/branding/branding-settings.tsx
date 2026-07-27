@@ -39,7 +39,10 @@ const COLOR_FIELDS: { key: keyof BrandingColors; label: string; labelAr: string 
   { key: 'danger', label: 'Danger', labelAr: 'الخطأ' },
   { key: 'sidebarActive', label: 'Sidebar Active', labelAr: 'القائمة الجانبية' },
   { key: 'background', label: 'Background', labelAr: 'الخلفية' },
-  { key: 'surface', label: 'Surface', labelAr: 'الترويسة' },
+  { key: 'surface', label: 'Surface', labelAr: 'السطح' },
+  { key: 'header', label: 'Header', labelAr: 'الترويسة' },
+  { key: 'sidebarBg', label: 'Sidebar BG', labelAr: 'خلفية الجانبية' },
+  { key: 'card', label: 'Card', labelAr: 'البطاقة' },
 ];
 
 export function BrandingSettings() {
@@ -175,7 +178,7 @@ export function BrandingSettings() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {COLOR_FIELDS.map(({ key, label, labelAr }) => (
                 <div key={key} className="space-y-2">
                   <Label className={cn('text-xs text-slate-400', isRTL && 'text-end block')}>{isRTL ? labelAr : label}</Label>
@@ -403,7 +406,7 @@ export function BrandingSettings() {
             {/* Fake Sidebar */}
             <div
               className="h-8 flex items-center gap-2 px-3 border-b"
-              style={{ backgroundColor: local.colors.surface, borderColor: 'rgba(255,255,255,0.06)' }}
+              style={{ backgroundColor: local.colors.header, borderColor: 'rgba(255,255,255,0.06)' }}
             >
               <div className="w-4 h-4 rounded" style={{ backgroundColor: local.colors.primary }} />
               <span className="text-[10px] font-bold" style={{ color: 'white' }}>{local.logo.systemName}</span>
@@ -411,7 +414,7 @@ export function BrandingSettings() {
 
             {/* Fake Sidebar Items */}
             <div className="flex">
-              <div className="w-16 p-2 space-y-1.5" style={{ backgroundColor: local.colors.surface }}>
+              <div className="w-16 p-2 space-y-1.5" style={{ backgroundColor: local.colors.sidebarBg }}>
                 {['item1', 'item2', 'item3'].map((_, i) => (
                     <div
                       key={i}
@@ -442,7 +445,7 @@ export function BrandingSettings() {
                     <div
                       key={i}
                       className="p-1.5 rounded-lg border"
-                      style={{ backgroundColor: local.colors.surface, borderColor: 'rgba(255,255,255,0.06)' }}
+                      style={{ backgroundColor: local.colors.card, borderColor: 'rgba(255,255,255,0.06)' }}
                     >
                       <div className="w-2 h-2 rounded-full mb-1" style={{ backgroundColor: s.color }} />
                       <div className="h-1 rounded-full bg-white/[0.06]" style={{ width: '60%' }} />
@@ -463,7 +466,7 @@ export function BrandingSettings() {
             {/* Fake Footer */}
             <div
               className="px-3 py-2 border-t flex items-center justify-between"
-              style={{ backgroundColor: local.colors.surface, borderColor: 'rgba(255,255,255,0.06)' }}
+              style={{ backgroundColor: local.colors.card, borderColor: 'rgba(255,255,255,0.06)' }}
             >
               <span className="text-[8px]" style={{ color: 'rgba(255,255,255,0.4)' }}>{local.logo.companyName}</span>
               <div className="flex gap-1">
@@ -479,7 +482,7 @@ export function BrandingSettings() {
             <p className="text-[10px] font-medium text-slate-500 mb-2 uppercase tracking-wider">
               {isRTL ? 'الألوان' : 'Colors'}
             </p>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {COLOR_FIELDS.map(({ key }) => (
                 <div key={key} className="text-center">
                   <div

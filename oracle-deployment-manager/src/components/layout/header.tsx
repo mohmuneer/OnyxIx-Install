@@ -33,7 +33,7 @@ export function Header() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
-    <header className="h-16 border-b border-white/[0.06] bg-[var(--brand-surface)]/80 backdrop-blur-xl flex items-center justify-between px-4 md:px-6 shrink-0 sticky top-0 z-30">
+    <header className="h-16 border-b border-white/[0.06] bg-[var(--brand-header)]/80 backdrop-blur-xl flex items-center justify-between px-4 md:px-6 shrink-0 sticky top-0 z-30">
       <div className="flex items-center gap-3">
         {/* Mobile hamburger */}
         <Button
@@ -84,7 +84,7 @@ export function Header() {
             {unreadCount > 0 && (
               <Badge className={cn(
                 'absolute h-4 w-4 flex items-center justify-center p-0 text-[9px] font-bold',
-                '-top-0.5 -end-0.5 bg-[var(--brand-primary)] text-white border-2 border-[var(--brand-surface)]'
+                '-top-0.5 -end-0.5 bg-[var(--brand-primary)] text-white border-2 border-[var(--brand-header)]'
               )}>
                 {unreadCount}
               </Badge>
