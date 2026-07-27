@@ -97,7 +97,7 @@ export function Sidebar() {
       <aside
         className={cn(
           'fixed top-0 z-40 h-screen transition-all duration-300 flex flex-col',
-          'dark:bg-[#0F1520]',
+          'dark:bg-[var(--brand-surface)]',
           isRTL ? 'right-0 border-l border-white/[0.06]' : 'left-0 border-r border-white/[0.06]',
           'hidden md:flex',
           isExpanded ? 'w-64' : 'w-[72px]',

@@ -8,7 +8,7 @@ export default function DeploymentPage() {
   return (
     <div dir="rtl" className="us-page-bg h-[calc(100vh-4rem)] flex flex-col text-end">
       <div className="flex items-center gap-3 shrink-0 pb-4">
-        <div className="p-2 rounded-xl bg-gradient-to-br from-[#18B13A] to-[#15803D]">
+        <div className="p-2 rounded-xl bg-gradient-to-br from-[var(--brand-primary)] to-[color-mix(in_srgb,var(--brand-primary)_80%,black)]">
           <BookOpen className="h-5 w-5 text-white" />
         </div>
         <div className="text-end">

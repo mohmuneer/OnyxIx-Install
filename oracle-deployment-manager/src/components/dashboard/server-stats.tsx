@@ -37,10 +37,10 @@ export function ServerStats({ info }: { info: SystemInfo | null }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.35 }}
-      className="rounded-2xl bg-[#111827] border border-white/[0.06] overflow-hidden"
+      className="rounded-2xl bg-[var(--card)] border border-white/[0.06] overflow-hidden"
     >
       <div className={cn('flex items-center gap-2 px-5 py-3 border-b border-white/[0.06]', isRTL && 'flex-row-reverse')}>
-        <Server className="h-4 w-4 text-[#38BDF8]" />
+        <Server className="h-4 w-4 text-[var(--brand-info)]" />
         <span className="text-sm font-semibold text-white">{t('dashboard.serverDetails')}</span>
       </div>
       <div className="p-4">

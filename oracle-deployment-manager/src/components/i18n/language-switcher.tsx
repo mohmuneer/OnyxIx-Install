@@ -31,12 +31,12 @@ export function LanguageSwitcher() {
               onClick={() => setLocale(code)}
               className={cn(
                 'flex items-center gap-2 text-sm text-slate-300 rounded-lg',
-                locale === code && 'bg-[#18B13A]/10 text-[#4ADE80]'
+                locale === code && 'bg-[var(--brand-primary)]/10 text-[var(--brand-sidebar-active)]'
               )}
             >
               <span className="text-base">{info.flag}</span>
               <span className="flex-1">{info.nativeName}</span>
-              {locale === code && <Check className="h-4 w-4 text-[#18B13A]" />}
+              {locale === code && <Check className="h-4 w-4 text-[var(--brand-primary)]" />}
             </DropdownMenuItem>
           );
         })}

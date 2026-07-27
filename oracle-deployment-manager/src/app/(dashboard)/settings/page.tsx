@@ -38,10 +38,10 @@ export default function SettingsPage() {
         <p className="text-slate-500">{t('settings.subtitle')}</p>
       </div>
 
-      <Card className="bg-[#111827] border-white/[0.06]">
+      <Card className="bg-[var(--card)] border-white/[0.06]">
         <CardHeader>
            <CardTitle className={cn('flex items-center gap-2 text-sm text-white', isRTL && 'flex-row-reverse')}>
-             <Palette className="h-4 w-4 text-[#18B13A]" /> {t('settings.appearance')}
+             <Palette className="h-4 w-4 text-[var(--brand-primary)]" /> {t('settings.appearance')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -77,10 +77,10 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card className="bg-[#111827] border-white/[0.06]">
+      <Card className="bg-[var(--card)] border-white/[0.06]">
         <CardHeader>
            <CardTitle className={cn('flex items-center gap-2 text-sm text-white', isRTL && 'flex-row-reverse')}>
-             <Bell className="h-4 w-4 text-[#38BDF8]" /> {t('settings.notifications')}
+             <Bell className="h-4 w-4 text-[var(--brand-info)]" /> {t('settings.notifications')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -102,10 +102,10 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card className="bg-[#111827] border-white/[0.06]">
+      <Card className="bg-[var(--card)] border-white/[0.06]">
         <CardHeader>
            <CardTitle className={cn('flex items-center gap-2 text-sm text-white', isRTL && 'flex-row-reverse')}>
-             <Shield className="h-4 w-4 text-[#FF9800]" /> {t('settings.security')}
+             <Shield className="h-4 w-4 text-[var(--brand-warning)]" /> {t('settings.security')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -114,7 +114,7 @@ export default function SettingsPage() {
               <Label className="text-slate-300">{t('settings.currentRole')}</Label>
               <p className="text-xs text-slate-500">{t('settings.yourAccessLevel')}</p>
             </div>
-            <Badge className="bg-[#18B13A]/10 text-[#4ADE80] border-[#18B13A]/20">Admin</Badge>
+            <Badge className="bg-[var(--brand-primary)]/10 text-[var(--brand-sidebar-active)] border-[var(--brand-primary)]/20">Admin</Badge>
           </div>
           <Separator className="bg-white/[0.06]" />
           <div className="space-y-2">
@@ -125,7 +125,7 @@ export default function SettingsPage() {
       </Card>
 
       <div className="flex justify-end">
-        <Button onClick={handleSave} className="bg-gradient-to-r from-[#18B13A] to-[#15803D] hover:from-[#15803D] hover:to-[#14702F] text-white rounded-xl shadow-lg shadow-[#18B13A]/20">
+        <Button onClick={handleSave} className="bg-gradient-to-r from-[var(--brand-primary)] to-[color-mix(in_srgb,var(--brand-primary)_80%,black)] hover:from-[color-mix(in_srgb,var(--brand-primary)_90%,black)] hover:to-[color-mix(in_srgb,var(--brand-primary)_70%,black)] text-white rounded-xl shadow-lg shadow-[var(--brand-primary)]/20">
            <Save className={cn('h-4 w-4', isRTL ? 'ms-2' : 'me-2')} />
           {saved ? t('settings.saved') : t('settings.saveSettings')}
         </Button>

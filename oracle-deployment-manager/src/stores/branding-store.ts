@@ -201,6 +201,7 @@ interface BrandingState {
 function applyCSSVariables(colors?: BrandingColors, font?: BrandingFont) {
   if (typeof document === 'undefined' || !colors || !font) return;
   const root = document.documentElement;
+  const isDark = root.classList.contains('dark');
 
   root.style.setProperty('--brand-primary', colors.primary);
   root.style.setProperty('--brand-secondary', colors.secondary);
@@ -220,13 +221,29 @@ function applyCSSVariables(colors?: BrandingColors, font?: BrandingFont) {
   root.style.setProperty('--secondary-foreground', '#FFFFFF');
   root.style.setProperty('--destructive', colors.danger);
   root.style.setProperty('--ring', colors.primary);
+  root.style.setProperty('--background', colors.background);
+  root.style.setProperty('--foreground', isDark ? '#E2E8F0' : '#0F172A');
+  root.style.setProperty('--card', colors.surface);
+  root.style.setProperty('--card-foreground', isDark ? '#E2E8F0' : '#0F172A');
+  root.style.setProperty('--popover', isDark ? '#1E293B' : '#FFFFFF');
+  root.style.setProperty('--popover-foreground', isDark ? '#E2E8F0' : '#0F172A');
+  root.style.setProperty('--muted', isDark ? '#1E293B' : '#F1F5F9');
+  root.style.setProperty('--muted-foreground', isDark ? '#94A3B8' : '#64748B');
+  root.style.setProperty('--accent', isDark ? `${colors.primary}15` : `${colors.primary}10`);
+  root.style.setProperty('--accent-foreground', isDark ? '#93C5FD' : '#1E40AF');
+  root.style.setProperty('--border', isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)');
+  root.style.setProperty('--input', isDark ? 'rgba(255, 255, 255, 0.10)' : 'rgba(0, 0, 0, 0.08)');
   root.style.setProperty('--chart-1', colors.primary);
   root.style.setProperty('--chart-2', colors.secondary);
   root.style.setProperty('--chart-3', colors.warning);
   root.style.setProperty('--chart-5', colors.danger);
   root.style.setProperty('--radius', font.borderRadius);
+  root.style.setProperty('--sidebar', isDark ? colors.surface : '#FFFFFF');
+  root.style.setProperty('--sidebar-foreground', isDark ? '#CBD5E1' : '#0F172A');
   root.style.setProperty('--sidebar-primary', colors.primary);
   root.style.setProperty('--sidebar-primary-foreground', '#FFFFFF');
+  root.style.setProperty('--sidebar-accent', `${colors.primary}18`);
+  root.style.setProperty('--sidebar-accent-foreground', colors.sidebarActive);
   root.style.setProperty('--sidebar-ring', colors.primary);
 }
 

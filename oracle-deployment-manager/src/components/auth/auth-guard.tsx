@@ -38,16 +38,16 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (redirecting) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0B0F17]">
-        <div className="h-8 w-8 border-2 border-[#18B13A]/30 border-t-[#18B13A] rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--brand-background, #0B0F17)' }}>
+        <div className="h-8 w-8 border-2 border-[var(--brand-primary)]/30 border-t-[var(--brand-primary)] rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!initialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0B0F17]">
-        <div className="h-8 w-8 border-2 border-[#18B13A]/30 border-t-[#18B13A] rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--brand-background, #0B0F17)' }}>
+        <div className="h-8 w-8 border-2 border-[var(--brand-primary)]/30 border-t-[var(--brand-primary)] rounded-full animate-spin" />
       </div>
     );
   }

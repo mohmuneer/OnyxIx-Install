@@ -71,12 +71,12 @@ export function SystemInfoCards({ onEdit, onExportPDF, onExportExcel }: Props) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="rounded-2xl bg-[#111827] border border-[#FF9800]/20 overflow-hidden"
+        className="rounded-2xl bg-[var(--card)] border border-[var(--brand-warning)]/20 overflow-hidden"
       >
-        <div className={cn('flex items-center justify-between px-5 py-4 border-b border-[#FF9800]/20', isRTL && 'flex-row-reverse')}>
+        <div className={cn('flex items-center justify-between px-5 py-4 border-b border-[var(--brand-warning)]/20', isRTL && 'flex-row-reverse')}>
           <div className={cn('flex items-center gap-3', isRTL && 'flex-row-reverse')}>
-            <div className="p-2.5 rounded-xl bg-[#FF9800]/10">
-              <Download className="h-5 w-5 text-[#FF9800]" />
+            <div className="p-2.5 rounded-xl bg-[var(--brand-warning)]/10">
+              <Download className="h-5 w-5 text-[var(--brand-warning)]" />
             </div>
             <h3 className="text-sm font-bold text-white">
               {isRTL ? 'متطلبات تركيب نظام Onyx IX' : 'ONYX IX Installation Requirements'}
@@ -87,7 +87,7 @@ export function SystemInfoCards({ onEdit, onExportPDF, onExportExcel }: Props) {
               variant="ghost"
               size="sm"
               onClick={onExportPDF}
-              className="gap-1 text-[10px] text-[#38BDF8] hover:text-[#38BDF8] hover:bg-[#38BDF8]/10 rounded-xl"
+              className="gap-1 text-[10px] text-[var(--brand-info)] hover:text-[var(--brand-info)] hover:bg-[var(--brand-info)]/10 rounded-xl"
             >
               <FileText className="h-3 w-3" />
               PDF
@@ -96,7 +96,7 @@ export function SystemInfoCards({ onEdit, onExportPDF, onExportExcel }: Props) {
               variant="ghost"
               size="sm"
               onClick={onExportExcel}
-              className="gap-1 text-[10px] text-[#18B13A] hover:text-[#18B13A] hover:bg-[#18B13A]/10 rounded-xl"
+              className="gap-1 text-[10px] text-[var(--brand-primary)] hover:text-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/10 rounded-xl"
             >
               <FileSpreadsheet className="h-3 w-3" />
               Excel
@@ -131,7 +131,7 @@ function SectionCard({ section, si, isRTL }: { section: DashboardSection; si: nu
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 * si }}
-      className="rounded-2xl bg-[#111827] border overflow-hidden"
+      className="rounded-2xl bg-[var(--card)] border overflow-hidden"
       style={{ borderColor: `${section.color}33` }}
     >
       {/* Header */}
@@ -220,7 +220,7 @@ function RequirementCard({ req, ri, isRTL }: { req: RequirementCategory; ri: num
       className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
     >
       <div className={cn('flex items-center gap-2 mb-3', isRTL && 'flex-row-reverse')}>
-        <Shield className="h-3.5 w-3.5 text-[#FF9800]" />
+        <Shield className="h-3.5 w-3.5 text-[var(--brand-warning)]" />
         <span className="text-xs font-semibold text-white">{req.category[isRTL ? 'ar' : 'en']}</span>
       </div>
       <div className="space-y-1.5">
@@ -232,7 +232,7 @@ function RequirementCard({ req, ri, isRTL }: { req: RequirementCategory; ri: num
               isRTL && 'flex-row-reverse'
             )}
           >
-            <div className="w-1.5 h-1.5 rounded-full bg-[#FF9800]/60 shrink-0" />
+            <div className="w-1.5 h-1.5 rounded-full bg-[var(--brand-warning)]/60 shrink-0" />
             <span className="text-[11px] text-slate-400">{item[isRTL ? 'ar' : 'en']}</span>
           </div>
         ))}

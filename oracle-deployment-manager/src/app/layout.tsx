@@ -57,16 +57,16 @@ export default async function RootLayout({
         <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' data: fonts.gstatic.com; connect-src 'self' http://localhost:* ws://localhost:*;" />
         <style suppressHydrationWarning dangerouslySetInnerHTML={{ __html: `
           :root {
-            --us-green: #18B13A;
-            --us-blue: #3A3A96;
-            --us-bg: #0B0F17;
-            --us-card: #111827;
-            --us-success: #22C55E;
-            --us-warning: #FF9800;
-            --us-danger: #EF4444;
+            --us-green: var(--brand-primary, #18B13A);
+            --us-blue: var(--brand-secondary, #3A3A96);
+            --us-bg: var(--brand-background, #0B0F17);
+            --us-card: var(--brand-surface, #111827);
+            --us-success: var(--brand-success, #22C55E);
+            --us-warning: var(--brand-warning, #FF9800);
+            --us-danger: var(--brand-danger, #EF4444);
             --us-info: #38BDF8;
             --us-border: rgba(255,255,255,.08);
-            --brand-radius: 0.75rem;
+            --brand-radius: var(--brand-radius, 0.75rem);
             --brand-font: 'IBM Plex Sans Arabic', 'Inter', system-ui, sans-serif;
             --brand-font-size: 14px;
           }

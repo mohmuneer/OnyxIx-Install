@@ -76,17 +76,17 @@ export default function DashboardPage() {
         >
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#18B13A] to-[#15803D] flex items-center justify-center shadow-lg shadow-[#18B13A]/20">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[var(--brand-primary)] to-[color-mix(in_srgb,var(--brand-primary)_80%,black)] flex items-center justify-center shadow-lg shadow-[var(--brand-primary)]/20">
                 <LayoutDashboard className="h-6 w-6 text-white" />
               </div>
               {allServicesOk && (
-                <div className="absolute -bottom-0.5 -end-0.5 w-3 h-3 rounded-full bg-[#22C55E] border-2 border-[#0B0F17] status-dot text-[#22C55E]" />
+                <div className="absolute -bottom-0.5 -end-0.5 w-3 h-3 rounded-full bg-[var(--brand-success)] border-2 border-[var(--brand-background)] status-dot text-[var(--brand-success)]" />
               )}
             </div>
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-bold text-white tracking-tight">{data.pageTitles.dashboardTitle || t('nav.dashboard')}</h1>
-                <Badge variant="secondary" className="text-[10px] font-mono px-1.5 py-0 bg-[#18B13A]/10 text-[#4ADE80] border-[#18B13A]/20">
+                <Badge variant="secondary" className="text-[10px] font-mono px-1.5 py-0 bg-[var(--brand-primary)]/10 text-[var(--brand-sidebar-active)] border-[var(--brand-primary)]/20">
                   {isRTL ? 'مباشر' : 'Live'}
                 </Badge>
               </div>
@@ -107,7 +107,7 @@ export default function DashboardPage() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setEditorOpen(true)}
-                className="gap-1.5 text-xs text-[#FF9800] hover:text-[#FF9800] hover:bg-[#FF9800]/10 rounded-xl"
+                className="gap-1.5 text-xs text-[var(--brand-warning)] hover:text-[var(--brand-warning)] hover:bg-[var(--brand-warning)]/10 rounded-xl"
               >
                 <Pencil className="h-3.5 w-3.5" />
                 {isRTL ? 'تعديل' : 'Edit'}

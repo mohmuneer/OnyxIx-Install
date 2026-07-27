@@ -131,10 +131,10 @@ export function BrandingSettings() {
       <div className="xl:col-span-2 space-y-5">
 
         {/* Theme Presets */}
-        <Card className="bg-[#111827]/80 border-white/[0.06]">
+        <Card className="bg-[var(--card)]/80 border-white/[0.06]">
           <CardHeader className="pb-3">
             <CardTitle className={cn('flex items-center gap-2 text-sm text-white', isRTL && 'flex-row-reverse')}>
-              <Paintbrush className="h-4 w-4 text-[#18B13A]" />
+              <Paintbrush className="h-4 w-4 text-[var(--brand-primary)]" />
               {t('branding.themes')}
             </CardTitle>
           </CardHeader>
@@ -167,10 +167,10 @@ export function BrandingSettings() {
         </Card>
 
         {/* Color Scheme */}
-        <Card className="bg-[#111827]/80 border-white/[0.06]">
+        <Card className="bg-[var(--card)]/80 border-white/[0.06]">
           <CardHeader className="pb-3">
             <CardTitle className={cn('flex items-center gap-2 text-sm text-white', isRTL && 'flex-row-reverse')}>
-              <Palette className="h-4 w-4 text-[#18B13A]" />
+              <Palette className="h-4 w-4 text-[var(--brand-primary)]" />
               {t('branding.colorScheme')}
             </CardTitle>
           </CardHeader>
@@ -208,10 +208,10 @@ export function BrandingSettings() {
         </Card>
 
         {/* Typography */}
-        <Card className="bg-[#111827]/80 border-white/[0.06]">
+        <Card className="bg-[var(--card)]/80 border-white/[0.06]">
           <CardHeader className="pb-3">
             <CardTitle className={cn('flex items-center gap-2 text-sm text-white', isRTL && 'flex-row-reverse')}>
-              <Type className="h-4 w-4 text-[#18B13A]" />
+              <Type className="h-4 w-4 text-[var(--brand-primary)]" />
               {t('branding.typography')}
             </CardTitle>
           </CardHeader>
@@ -253,10 +253,10 @@ export function BrandingSettings() {
         </Card>
 
         {/* Company & Login */}
-        <Card className="bg-[#111827]/80 border-white/[0.06]">
+        <Card className="bg-[var(--card)]/80 border-white/[0.06]">
           <CardHeader className="pb-3">
             <CardTitle className={cn('flex items-center gap-2 text-sm text-white', isRTL && 'flex-row-reverse')}>
-              <Building2 className="h-4 w-4 text-[#18B13A]" />
+              <Building2 className="h-4 w-4 text-[var(--brand-primary)]" />
               {isRTL ? 'بيانات الشركة وتسجيل الدخول' : 'Company & Login'}
             </CardTitle>
           </CardHeader>
@@ -357,7 +357,7 @@ export function BrandingSettings() {
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="bg-gradient-to-r from-[#18B13A] to-[#15803D] hover:from-[#15803D] hover:to-[#14702F] text-white"
+            className="bg-gradient-to-r from-[var(--brand-primary)] to-[color-mix(in_srgb,var(--brand-primary)_80%,black)] hover:from-[color-mix(in_srgb,var(--brand-primary)_90%,black)] hover:to-[color-mix(in_srgb,var(--brand-primary)_70%,black)] text-white"
           >
             {saving ? (
               <Loader2 className={cn('h-4 w-4 animate-spin', isRTL ? 'ms-2' : 'me-2')} />
@@ -391,7 +391,7 @@ export function BrandingSettings() {
       <div className="xl:col-span-1">
         <div className="sticky top-20 space-y-4">
           <h3 className={cn('flex items-center gap-2 text-sm font-medium text-white', isRTL && 'flex-row-reverse')}>
-            <Monitor className="h-4 w-4 text-[#18B13A]" />
+            <Monitor className="h-4 w-4 text-[var(--brand-primary)]" />
             {isRTL ? 'معاينة حيّة' : 'Live Preview'}
           </h3>
 
@@ -475,7 +475,7 @@ export function BrandingSettings() {
           </div>
 
           {/* Color Swatches */}
-          <div className="rounded-xl border border-white/[0.06] bg-[#111827]/80 p-3">
+          <div className="rounded-xl border border-white/[0.06] bg-[var(--card)]/80 p-3">
             <p className="text-[10px] font-medium text-slate-500 mb-2 uppercase tracking-wider">
               {isRTL ? 'الألوان' : 'Colors'}
             </p>
@@ -493,7 +493,7 @@ export function BrandingSettings() {
           </div>
 
           {/* Font Preview */}
-          <div className="rounded-xl border border-white/[0.06] bg-[#111827]/80 p-3">
+          <div className="rounded-xl border border-white/[0.06] bg-[var(--card)]/80 p-3">
             <p className="text-[10px] font-medium text-slate-500 mb-2 uppercase tracking-wider">
               {isRTL ? 'الخط' : 'Font'}
             </p>

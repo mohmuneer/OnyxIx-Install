@@ -12,10 +12,10 @@ import { useLocale } from '@/hooks/use-locale';
 import { cn } from '@/lib/utils';
 
 const ACTIONS = [
-  { href: '/sw-deploy', labelKey: 'nav.swDeploy', icon: Package, color: '#FF9800', bg: 'bg-[#FF9800]/10' },
-  { href: '/deployment', labelKey: 'nav.deployment', icon: Rocket, color: '#18B13A', bg: 'bg-[#18B13A]/10' },
-  { href: '/architecture', labelKey: 'nav.architecture', icon: Layers, color: '#38BDF8', bg: 'bg-[#38BDF8]/10' },
-  { href: '/templates', labelKey: 'nav.templates', icon: FileText, color: '#38BDF8', bg: 'bg-[#38BDF8]/10' },
+  { href: '/sw-deploy', labelKey: 'nav.swDeploy', icon: Package, colorVar: '--brand-warning', bg: 'bg-[var(--brand-warning)]/10' },
+  { href: '/deployment', labelKey: 'nav.deployment', icon: Rocket, colorVar: '--brand-primary', bg: 'bg-[var(--brand-primary)]/10' },
+  { href: '/architecture', labelKey: 'nav.architecture', icon: Layers, colorVar: '--brand-info', bg: 'bg-[var(--brand-info)]/10' },
+  { href: '/templates', labelKey: 'nav.templates', icon: FileText, colorVar: '--brand-info', bg: 'bg-[var(--brand-info)]/10' },
 ];
 
 export function QuickActions() {
@@ -26,10 +26,10 @@ export function QuickActions() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="rounded-2xl bg-[#111827] border border-white/[0.06] overflow-hidden"
+      className="rounded-2xl bg-[var(--card)] border border-white/[0.06] overflow-hidden"
     >
       <div className={cn('flex items-center gap-2 px-5 py-3 border-b border-white/[0.06]', isRTL && 'flex-row-reverse')}>
-        <Rocket className="h-4 w-4 text-[#18B13A]" />
+        <Rocket className="h-4 w-4 text-[var(--brand-primary)]" />
         <span className="text-sm font-semibold text-white">{t('dashboard.quickActions')}</span>
       </div>
       <div className="p-4">
@@ -53,7 +53,7 @@ export function QuickActions() {
                       'p-3 rounded-xl transition-all duration-200 group-hover:scale-110',
                       action.bg
                     )}>
-                      <Icon className="h-6 w-6" style={{ color: action.color }} />
+                      <Icon className="h-6 w-6" style={{ color: `var(${action.colorVar})` }} />
                     </div>
                     <span className="text-xs md:text-sm font-medium text-slate-500 group-hover:text-slate-300 transition-colors leading-tight">
                       {t(action.labelKey)}

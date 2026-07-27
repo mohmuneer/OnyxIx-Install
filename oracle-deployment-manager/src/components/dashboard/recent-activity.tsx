@@ -7,10 +7,10 @@ import { useLocale } from '@/hooks/use-locale';
 import { cn } from '@/lib/utils';
 
 const LEVEL_CONFIG: Record<string, { icon: React.ComponentType<{ className?: string }>; color: string; bg: string }> = {
-  success: { icon: CheckCircle2, color: 'text-[#22C55E]', bg: 'bg-[#22C55E]/10' },
+  success: { icon: CheckCircle2, color: 'text-[var(--brand-success)]', bg: 'bg-[var(--brand-success)]/10' },
   error: { icon: XCircle, color: 'text-[#EF4444]', bg: 'bg-[#EF4444]/10' },
-  warning: { icon: AlertTriangle, color: 'text-[#FF9800]', bg: 'bg-[#FF9800]/10' },
-  info: { icon: Info, color: 'text-[#38BDF8]', bg: 'bg-[#38BDF8]/10' },
+  warning: { icon: AlertTriangle, color: 'text-[var(--brand-warning)]', bg: 'bg-[var(--brand-warning)]/10' },
+  info: { icon: Info, color: 'text-[var(--brand-info)]', bg: 'bg-[var(--brand-info)]/10' },
 };
 
 export function RecentActivity() {
@@ -23,11 +23,11 @@ export function RecentActivity() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.3 }}
-      className="rounded-2xl bg-[#111827] border border-white/[0.06] overflow-hidden"
+      className="rounded-2xl bg-[var(--card)] border border-white/[0.06] overflow-hidden"
     >
       <div className={cn('flex items-center justify-between px-5 py-3 border-b border-white/[0.06]', isRTL && 'flex-row-reverse')}>
         <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
-          <ScrollText className="h-4 w-4 text-[#18B13A]" />
+          <ScrollText className="h-4 w-4 text-[var(--brand-primary)]" />
           <span className="text-sm font-semibold text-white">{t('dashboard.recentActivity')}</span>
         </div>
         {recent.length > 0 && (
