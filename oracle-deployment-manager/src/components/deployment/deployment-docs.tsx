@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import {
   Collapsible,
@@ -381,22 +380,20 @@ function SectionContent({
           )}
         </div>
       ) : (
-        <ScrollArea className="max-h-[600px]">
-          <div className="space-y-1">
-            {categories.map((cat) => (
-              <CategorySection
-                key={cat.id}
-                category={cat}
-                isRTL={isRTL}
-                searchQuery=""
-                onUploadFile={onUploadFile}
-                onUploadReplace={onUploadReplace}
-                onRemoveFile={onRemoveFile}
-                uploadingId={uploadingId}
-              />
-            ))}
-          </div>
-        </ScrollArea>
+        <div className="space-y-1">
+          {categories.map((cat) => (
+            <CategorySection
+              key={cat.id}
+              category={cat}
+              isRTL={isRTL}
+              searchQuery=""
+              onUploadFile={onUploadFile}
+              onUploadReplace={onUploadReplace}
+              onRemoveFile={onRemoveFile}
+              uploadingId={uploadingId}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
