@@ -13,28 +13,28 @@ export default function BrandingPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (role && role !== 'admin') {
+    if (role !== null && role !== 'admin') {
       router.replace('/dashboard');
     }
   }, [role, router]);
 
-  if (role !== 'admin') {
+  if (role === null) {
     return (
-      <div className="min-h-screen bg-[#0B0F17] flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <Loader2 className="h-8 w-8 animate-spin text-[#18B13A]" />
       </div>
     );
   }
 
+  if (role !== 'admin') return null;
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--brand-background, #0B0F17)' }}>
-      <div className="space-y-4">
-        <div>
-          <h1 className="text-2xl font-bold text-white">{t('branding.title')}</h1>
-          <p className="text-slate-500">{t('branding.subtitle')}</p>
-        </div>
-        <BrandingSettings />
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold text-white">{t('branding.title')}</h1>
+        <p className="text-slate-500">{t('branding.subtitle')}</p>
       </div>
+      <BrandingSettings />
     </div>
   );
 }
